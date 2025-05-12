@@ -27,6 +27,7 @@ import {
   type DBMessage,
   type Chat,
   stream,
+  studentProfile,
 } from './schema';
 import type { ArtifactKind } from '@/components/artifact';
 import { generateUUID } from '../utils';
@@ -506,6 +507,57 @@ export async function getStreamIdsByChatId({ chatId }: { chatId: string }) {
     return streamIds.map(({ id }) => id);
   } catch (error) {
     console.error('Failed to get stream ids by chat id from database');
+    throw error;
+  }
+}
+
+export async function getStudentProfileByUserId({ userId }: { userId: string }) {
+  try {
+    const [profile] = await db
+      .select()
+      .from(studentProfile)
+      .where(eq(studentProfile.userId, userId));
+    return profile;
+  } catch (error) {
+    console.error('Failed to get student profile from database');
+    throw error;
+  }
+}
+
+export async function createOrUpdateStudentProfile(data: {
+  userId: string;
+  targetMajor?: string;
+  targetTerm?: string;
+  college?: string;
+  undergradMajor?: string;
+  greQuantScore?: number;
+  greVerbalScore?: number;
+  greAwaScore?: string;
+  cgpa?: string;
+  toeflScore?: number;
+  ielts?: string;
+  workExpMonths?: number;
+  publications?: number;
+}) {
+  const { userId, ...profileData } = data;
+
+  try {
+    const existingProfile = await getStudentProfileByUserId({ userId });
+
+    if (existingProfile) {
+      return await db
+        .update(studentProfile)
+        .set(profileData)
+        .where(eq(studentProfile.userId, userId))
+        .returning();
+    } else {
+      return await db
+        .insert(studentProfile)
+        .values({ userId, ...profileData })
+        .returning();
+    }
+  } catch (error) {
+    console.error('Failed to create/update student profile in database');
     throw error;
   }
 }

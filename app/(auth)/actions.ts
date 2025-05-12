@@ -2,7 +2,7 @@
 
 import { z } from 'zod';
 
-import { createUser, getUser } from '@/lib/db/queries';
+import { createUser, getUser, getStudentProfileByUserId } from '@/lib/db/queries';
 
 import { signIn } from './auth';
 
@@ -82,3 +82,14 @@ export const register = async (
     return { status: 'failed' };
   }
 };
+
+export async function isStudentProfileComplete(userId: string): Promise<boolean> {
+  try {
+    const profile = await getStudentProfileByUserId({ userId });
+
+    return Boolean(profile && profile.targetMajor && profile.college);
+  } catch (error) {
+    console.error('Failed to check if student profile is complete', error);
+    return false;
+  }
+}
