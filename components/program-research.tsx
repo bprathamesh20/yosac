@@ -1,6 +1,9 @@
 import { LoaderIcon } from './icons';
 import { useState } from 'react';
 import { Skeleton } from './ui/skeleton';
+import { Button } from './ui/button';
+import { BookmarkIcon } from 'lucide-react';
+import { toast } from 'sonner';
 
 function CalendarIcon() {
   return <span role="img" aria-label="calendar">📅</span>;
@@ -92,12 +95,43 @@ export function ProgramResearchResult({ result }: {
       imageUrls: string[];
     };
     text?: string;
-  }
+  },
 }) {
   const data = result.object;
   const [expanded, setExpanded] = useState(false);
-  const [viewerImg, setViewerImg] = useState<string|null>(null);
+  const [viewerImg, setViewerImg] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);  
   const SUMMARY_LIMIT = 120;
+
+  // Function to save program  
+  const saveProgram = async () => {  
+    if (!data) return;  
+      
+    setIsSaving(true);  
+    try {  
+      const response = await fetch('/api/programs/save', {  
+        method: 'POST',  
+        headers: {  
+          'Content-Type': 'application/json',  
+        },  
+        body: JSON.stringify({ program: data }),  
+      });  
+        
+      if (response.ok) {  
+        toast.success("Program saved", {  
+          description: "The program has been saved successfully.",  
+        });  
+      } else {  
+        throw new Error('Failed to save program');  
+      }  
+    } catch (error) {  
+      toast.error("Error", {  
+        description: "Failed to save program. Please try again later.",  
+      });  
+    } finally {  
+      setIsSaving(false);  
+    }  
+  };  
 
   if (!data) {
     return (
@@ -208,17 +242,29 @@ export function ProgramResearchResult({ result }: {
           </ul>
         </div>
       </div>
-      <div className="px-5 py-3 border-t flex flex-row gap-3 items-center bg-muted/50">
-        {data.officialLink && (
-          <a
-            href={data.officialLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-primary font-medium hover:underline text-sm"
-          >
-            View Official Program Page ↗
-          </a>
-        )}
+      <div className="px-5 py-3 border-t flex flex-row gap-3 items-center bg-muted/50 justify-between">  
+        <div>  
+          {data.officialLink && (  
+            <a  
+              href={data.officialLink}  
+              target="_blank"  
+              rel="noopener noreferrer"  
+              className="text-primary font-medium hover:underline text-sm"  
+            >  
+              View Official Program Page ↗  
+            </a>  
+          )}  
+        </div>  
+        <Button   
+          variant="outline"  
+          size="sm"  
+          onClick={saveProgram}  
+          disabled={isSaving || !data}  
+          className="flex items-center gap-2"  
+        >  
+          <BookmarkIcon size={16} />  
+          {isSaving ? 'Saving...' : 'Save Program'}  
+        </Button>  
       </div>
     </div>
   );

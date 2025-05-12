@@ -57,6 +57,13 @@
       "when": 1747060147680,
       "tag": "0007_large_purifiers",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1747082926472,
+      "tag": "0008_groovy_firelord",
+      "breakpoints": true
     }
   ]
 }

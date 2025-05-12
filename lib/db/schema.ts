@@ -189,3 +189,29 @@ export const studentProfile = pgTable('StudentProfile', {
 });
 
 export type StudentProfile = InferSelectModel<typeof studentProfile>;
+
+export const savedProgram = pgTable('SavedProgram', {  
+  id: uuid('id').primaryKey().notNull().defaultRandom(),  
+  userId: uuid('userId')  
+    .notNull()  
+    .references(() => user.id),  
+  programName: text('programName').notNull(),  
+  universityName: text('universityName').notNull(),  
+  overview: text('overview').notNull(),  
+  gpaRequirement: text('gpaRequirement'),  
+  greRequirement: text('greRequirement'),  
+  toeflRequirement: text('toeflRequirement'),  
+  ieltsRequirement: text('ieltsRequirement'),  
+  requirementsSummary: text('requirementsSummary'),  
+  deadlineHint: text('deadlineHint').notNull(),  
+  duration: text('duration').notNull(),  
+  costHint: text('costHint').notNull(),  
+  highlight1: text('highlight1').notNull(),  
+  highlight2: text('highlight2').notNull(),  
+  highlight3: text('highlight3'),  
+  officialLink: text('officialLink'),  
+  imageUrls: json('imageUrls').notNull(),  
+  createdAt: timestamp('createdAt').notNull(),  
+});  
+  
+export type SavedProgram = InferSelectModel<typeof savedProgram>;

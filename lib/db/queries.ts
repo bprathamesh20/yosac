@@ -28,6 +28,7 @@ import {
   type Chat,
   stream,
   studentProfile,
+  savedProgram,
 } from './schema';
 import type { ArtifactKind } from '@/components/artifact';
 import { generateUUID } from '../utils';
@@ -558,6 +559,79 @@ export async function createOrUpdateStudentProfile(data: {
     }
   } catch (error) {
     console.error('Failed to create/update student profile in database');
+    throw error;
+  }
+}
+
+export async function saveProgram({
+  userId,
+  program,
+}: {
+  userId: string;
+  program: {
+    programName: string;
+    universityName: string;
+    overview: string;
+    gpaRequirement?: string;
+    greRequirement?: string;
+    toeflRequirement?: string;
+    ieltsRequirement?: string;
+    requirementsSummary?: string;
+    deadlineHint: string;
+    duration: string;
+    costHint: string;
+    highlight1: string;
+    highlight2: string;
+    highlight3?: string;
+    officialLink?: string;
+    imageUrls: string[];
+  };
+}) {
+  try {
+    return await db
+      .insert(savedProgram)
+      .values({
+        userId,
+        ...program,
+        createdAt: new Date(),
+      })
+      .returning();
+  } catch (error) {
+    console.error('Failed to save program in database');
+    throw error;
+  }
+}
+
+export async function getSavedProgramsByUserId({
+  userId,
+}: {
+  userId: string;
+}) {
+  try {
+    return await db
+      .select()
+      .from(savedProgram)
+      .where(eq(savedProgram.userId, userId))
+      .orderBy(desc(savedProgram.createdAt));
+  } catch (error) {
+    console.error('Failed to get saved programs from database');
+    throw error;
+  }
+}
+
+export async function deleteSavedProgram({
+  id,
+  userId,
+}: {
+  id: string;
+  userId: string;
+}) {
+  try {
+    return await db
+      .delete(savedProgram)
+      .where(and(eq(savedProgram.id, id), eq(savedProgram.userId, userId)));
+  } catch (error) {
+    console.error('Failed to delete saved program from database');
     throw error;
   }
 }
