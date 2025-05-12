@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { LoaderIcon } from './icons';
+import { Skeleton } from './ui/skeleton';
 
 function TrophyIcon() {
   return <span role="img" aria-label="trophy">🏆</span>;
@@ -7,17 +8,27 @@ function TrophyIcon() {
 
 
 export function UniversityResearchCall({ args }: { args: { country: string } }) {
+  // Show 3 skeleton cards as placeholders
   return (
-    <div className="border py-2 px-3 rounded-xl flex flex-row items-start justify-between gap-3">
-      <div className="flex flex-row gap-3 items-start">
-        <div className="text-zinc-500 mt-1">
-          <TrophyIcon />
+    <div className="flex flex-row gap-4 w-full overflow-x-auto pb-2">
+      {[1, 2, 3].map((_, i) => (
+        <div key={i} className="bg-background border rounded-xl shadow-sm min-w-[260px] max-w-[300px] flex flex-col p-4 gap-2 animate-pulse">
+          <div className="h-28 w-full bg-muted rounded-lg mb-2 flex items-center justify-center text-4xl">
+            {/* Placeholder for image */}
+            <TrophyIcon />
+          </div>
+          <Skeleton className="font-semibold text-lg leading-tight w-2/3 h-6 mb-1" />
+          <Skeleton className="text-muted-foreground text-sm mb-1 w-full h-4" />
+          <div className="flex flex-row gap-2 mt-auto">
+            <span className="flex items-center gap-1 bg-muted px-2 py-1 rounded-md text-xs font-medium">
+              <span className="w-3 h-3 animate-spin inline-flex items-center justify-center">
+                <LoaderIcon size={12} />
+              </span>
+              <span className="text-xs">Global</span>
+            </span>
+          </div> 
         </div>
-        <div className="text-left">
-          Researching top universities in: <b>{args.country}</b>
-        </div>
-      </div>
-      <div className="animate-spin mt-1"><LoaderIcon /></div>  
+      ))}
     </div>
   );
 }

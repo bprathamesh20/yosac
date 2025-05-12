@@ -1,5 +1,6 @@
 import { LoaderIcon } from './icons';
 import { useState } from 'react';
+import { Skeleton } from './ui/skeleton';
 
 function CalendarIcon() {
   return <span role="img" aria-label="calendar">📅</span>;
@@ -15,17 +16,57 @@ function StarIcon() {
 }
 
 export function ProgramResearchCall({ args }: { args: { program: string; university: string } }) {
+  // Show 2 skeleton cards as placeholders
   return (
-    <div className="border py-2 px-3 rounded-xl flex flex-row items-start justify-between gap-3">
-      <div className="flex flex-row gap-3 items-start">
-        <div className="text-zinc-500 mt-1">
-          <StarIcon />
+    <div className="w-full max-w-2xl mx-auto flex flex-col gap-4">
+        <div className="border rounded-xl shadow-sm bg-background w-full overflow-hidden animate-pulse flex flex-col">
+          <div className="px-5 py-4 border-b flex flex-col gap-1">
+            <Skeleton className="text-lg font-bold h-6 w-1/2 mb-2" />
+            <Skeleton className="text-sm font-medium h-4 w-1/3" />
+          </div>
+          <div className="px-5 py-4 flex flex-col gap-3">
+            <div>
+              <span className="font-semibold">Overview: </span>
+              <Skeleton className="h-4 w-3/4 inline-block align-middle" />
+            </div>
+            <div>
+              <span className="font-semibold">Key Requirements: </span>
+              <div className="flex flex-wrap gap-2 mt-1 mb-1">
+                <Skeleton className="h-5 w-16 rounded-md" />
+                <Skeleton className="h-5 w-16 rounded-md" />
+                <Skeleton className="h-5 w-16 rounded-md" />
+              </div>
+              <Skeleton className="h-3 w-2/3 mt-1" />
+            </div>
+            <div className="flex flex-wrap gap-2 mt-2">
+              <span className="flex items-center gap-1 bg-muted px-2 py-1 rounded-md text-xs font-medium">
+                <CalendarIcon /> <Skeleton className="h-3 w-16" />
+              </span>
+              <span className="flex items-center gap-1 bg-muted px-2 py-1 rounded-md text-xs font-medium">
+                <DurationIcon /> <Skeleton className="h-3 w-16" />
+              </span>
+              <span className="flex items-center gap-1 bg-muted px-2 py-1 rounded-md text-xs font-medium">
+                <MoneyIcon /> <Skeleton className="h-3 w-16" />
+              </span>
+            </div>
+            <div className="mt-2">
+              <span className="font-semibold">Highlights:</span>
+              <ul className="list-disc ml-6 text-muted-foreground text-sm mt-1">
+                <li><Skeleton className="h-3 w-32" /></li>
+                <li><Skeleton className="h-3 w-28" /></li>
+                <li><Skeleton className="h-3 w-24" /></li>
+              </ul>
+            </div>
+          </div>
+          <div className="px-5 py-3 border-t flex flex-row gap-3 items-center bg-muted/50">
+            <span className="flex items-center gap-2 text-xs text-muted-foreground">
+              <span className="w-3 h-3 animate-spin inline-flex items-center justify-center">
+                <LoaderIcon size={12} />
+              </span>
+              Loading program details...
+            </span>
+          </div>
         </div>
-        <div className="text-left">
-          Researching <b>{args.program}</b> at <b>{args.university}</b>
-        </div>
-      </div>
-      <div className="animate-spin mt-1"><LoaderIcon /></div>
     </div>
   );
 }
