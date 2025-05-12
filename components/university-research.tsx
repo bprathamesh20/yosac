@@ -39,6 +39,7 @@ export function UniversityResearchResult({ result }: {
       name: string;
       rank?: number;
       description?: string;
+      photo: string;
     }>;
     text?: string;
   }
@@ -61,8 +62,7 @@ export function UniversityResearchResult({ result }: {
       {universities.map((u, i) => (
         <div key={i} className="bg-background border rounded-xl shadow-sm min-w-[260px] max-w-[300px] flex flex-col p-4 gap-2">
           <div className="h-28 w-full bg-muted rounded-lg mb-2 flex items-center justify-center text-4xl">
-            {/* Placeholder for image */}
-            <TrophyIcon />
+            <img src={u.photo} alt={u.name} className="object-cover h-full rounded-lg"/>
           </div>
           <div className="font-semibold text-lg leading-tight">{u.name}</div>
           <div className="text-muted-foreground text-sm mb-1">

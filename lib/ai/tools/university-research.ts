@@ -3,6 +3,17 @@ import { z } from 'zod';
 import { perplexity } from '@ai-sdk/perplexity';
 import { google } from '@ai-sdk/google';
 
+const photoLink = "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Morgan_Hall_of_Williams_College_in_the_fall_%2827_October_2010%29.jpg/330px-Morgan_Hall_of_Williams_College_in_the_fall_%2827_October_2010%29.jpg";
+
+async function fetchUniversityPhoto(universityName: string): Promise<string | null> {
+  const url = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(universityName)}`;
+  const response = await fetch(url);
+  if (!response.ok) return null;
+
+  const data = await response.json();
+  return data?.thumbnail?.source ?? null;
+}
+
 export const universityResearch = ({ dataStream }: { dataStream?: any }) => tool({
   description:
     'Find the best universities in a given country according to QS World Ranking.',
@@ -32,9 +43,17 @@ const { object } = await generateObject({
     name: z.string().describe('The name of the university'),
     rank: z.number().describe('The global rank of the university'),
     description: z.string().describe('A short description of the university'),
+    photo: z.string().describe('Link for the college Logo'),
   }),
   prompt: 'Generate the json object for universities form the given info ' + text,
 });
+
+await Promise.all(
+  object.map(async (uni) => {
+    const photo = await fetchUniversityPhoto(uni.name);
+    uni.photo = photo ?? photoLink;
+  })
+);
 
     console.log(object);
     return { object };

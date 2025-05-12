@@ -9,6 +9,8 @@ import {
   primaryKey,
   foreignKey,
   boolean,
+  integer,
+  numeric,
 } from 'drizzle-orm/pg-core';
 
 export const user = pgTable('User', {
@@ -168,3 +170,22 @@ export const stream = pgTable(
 );
 
 export type Stream = InferSelectModel<typeof stream>;
+
+export const studentProfile = pgTable('StudentProfile', {
+  id: uuid('id').primaryKey().notNull().defaultRandom(),
+  userId: uuid('userId').notNull().references(() => user.id),
+  targetMajor: varchar('targetMajor', { length: 64 }),
+  targetTerm: varchar('targetTerm', { length: 32 }),
+  college: varchar('college', { length: 128 }),
+  undergradMajor: varchar('undergradMajor', { length: 64 }),
+  greQuantScore: integer('greQuantScore'),
+  greVerbalScore: integer('greVerbalScore'),
+  greAwaScore: numeric('greAwaScore'),
+  cgpa: numeric('cgpa'),
+  toeflScore: integer('toeflScore'),
+  ielts: varchar('ielts', { length: 16 }),
+  workExpMonths: integer('workExpMonths'),
+  publications: integer('publications'),
+});
+
+export type StudentProfile = InferSelectModel<typeof studentProfile>;

@@ -89,12 +89,14 @@ export function ProgramResearchResult({ result }: {
       highlight2: string;
       highlight3?: string;
       officialLink?: string;
+      imageUrls: string[];
     };
     text?: string;
   }
 }) {
   const data = result.object;
   const [expanded, setExpanded] = useState(false);
+  const [viewerImg, setViewerImg] = useState<string|null>(null);
   const SUMMARY_LIMIT = 120;
 
   if (!data) {
@@ -107,6 +109,44 @@ export function ProgramResearchResult({ result }: {
   }
   return (
     <div className="border rounded-xl shadow-sm bg-background w-full max-w-2xl mx-auto overflow-hidden">
+      {data.imageUrls && data.imageUrls.length > 0 && (
+        <div className="w-full overflow-x-auto flex gap-2 px-5 pt-4 pb-2">
+          {data.imageUrls.map((url, idx) => (
+            <img
+              key={idx}
+              src={url}
+              alt={`Program image ${idx + 1}`}
+              className="rounded-md object-cover max-h-32 border cursor-pointer"
+              style={{ minWidth: '120px', maxWidth: '200px' }}
+              onClick={() => setViewerImg(url)}
+            />
+          ))}
+        </div>
+      )}
+      {viewerImg && (
+        <div
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70"
+          onClick={() => setViewerImg(null)}
+        >
+          <div
+            className="relative max-w-full max-h-full flex items-center justify-center"
+            onClick={e => e.stopPropagation()}
+          >
+            <img
+              src={viewerImg}
+              alt="Enlarged program image"
+              className="rounded-lg max-h-[80vh] max-w-[90vw] shadow-lg"
+            />
+            <button
+              className="absolute top-2 right-2 bg-white/80 hover:bg-white rounded-full w-8 h-8 flex items-center justify-center shadow text-xl"
+              onClick={() => setViewerImg(null)}
+              aria-label="Close photo viewer"
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      )}
       <div className="px-5 py-4 border-b flex flex-col gap-1">
         <div className="text-lg font-bold text-primary">{data.programName}</div>
         <div className="text-sm text-muted-foreground font-medium">{data.universityName}</div>

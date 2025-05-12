@@ -3,6 +3,23 @@ import { z } from 'zod';
 import { perplexity } from '@ai-sdk/perplexity';
 import { google } from '@ai-sdk/google';
 
+
+async function fetchUniversityImageUrls(universityName: string): Promise<string[]> {
+    const endpoint = 'https://api.openverse.org/v1/images/';
+    const params = new URLSearchParams({
+      q: universityName,
+      page_size: '4',
+    });
+  
+    const response = await fetch(`${endpoint}?${params.toString()}`);
+    if (!response.ok) {
+      throw new Error(`Openverse API error: ${response.statusText}`);
+    }
+  
+    const data = await response.json();
+    return data.results.map((item: { url: string }) => item.url);
+  }
+
 export const programResearch = ({ dataStream }: { dataStream?: any }) => tool({
   description:
     'Research a specific program or course in a given university and return structured details.',
@@ -33,7 +50,7 @@ export const programResearch = ({ dataStream }: { dataStream?: any }) => tool({
 - Official program link (if available)
 Format as a readable list.`;
     const { text } = await generateText({
-      model: perplexity('sonar-deep-research'),
+      model: perplexity('sonar-pro'),
       prompt,
     });
 
@@ -56,10 +73,16 @@ Format as a readable list.`;
           highlight1: z.string(),
           highlight2: z.string(),
           highlight3: z.string().optional(),
+          imageUrls: z.array(z.string()),
           officialLink: z.string().optional(),
         }),
         prompt: `Extract the following fields as a JSON object from this info about the program at the university.\nFields: programName, universityName, overview, gpaRequirement, greRequirement, toeflRequirement, ieltsRequirement, requirementsSummary, deadlineHint, duration, costHint, highlight1, highlight2, highlight3, officialLink\nText:\n${text}`,
       });
+
+
+      const imageUrls = await fetchUniversityImageUrls(university);
+      object.imageUrls = imageUrls;
+
       console.log('Gemini object:', object);
       return { object };
     } catch (err) {
