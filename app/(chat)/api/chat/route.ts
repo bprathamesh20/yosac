@@ -36,6 +36,7 @@ import { after } from 'next/server';
 import type { Chat } from '@/lib/db/schema';
 import { deepResearch } from '@/lib/ai/tools/deep-research';
 import { universityResearch } from '@/lib/ai/tools/university-research';
+import { programResearch } from '@/lib/ai/tools/program-research';
 export const maxDuration = 60;
 
 let globalStreamContext: ResumableStreamContext | null = null;
@@ -162,6 +163,7 @@ export async function POST(request: Request) {
                   'getWeather',
                   'deepResearch',
                   'universityResearch',
+                  'programResearch',
                   'createDocument',
                   'updateDocument',
                   'requestSuggestions',
@@ -172,6 +174,7 @@ export async function POST(request: Request) {
             getWeather,
             deepResearch: deepResearch({ dataStream }),
             universityResearch: universityResearch({ dataStream }),
+            programResearch: programResearch({ dataStream }),
             createDocument: createDocument({ session, dataStream }),
             updateDocument: updateDocument({ session, dataStream }),
             requestSuggestions: requestSuggestions({

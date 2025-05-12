@@ -17,7 +17,7 @@ export const universityResearch = ({ dataStream }: { dataStream?: any }) => tool
         content: 'Researching universities...'
       });   
     }
-    const prompt = `List the top 5 universities in ${country} in ${course ? course : 'general'} according to the latest QS World University Rankings. For each, provide:\n- Name\n- Global rank\n- A short description (1 sentence)\n- An approximate reputation score as a percentage (if available)\nFormat as a readable list.`;
+    const prompt = `List the top 5 universities in ${country} in ${course ? course : ''} according to the latest QS World University Rankings. For each, provide:\n- Name\n- Global rank (according to QS World University Rankings)\n- A short description (1 sentence)\n- An approximate reputation score as a percentage (if available)\nFormat as a readable list.`;
     const { text } = await generateText({
       model: perplexity('sonar-pro'),
       prompt,

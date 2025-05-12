@@ -45,7 +45,10 @@ Deep research is a tool that allows you to research specific topics, details, or
 - When the user requests a list or comparison of universities based on rankings or reputation
 - example : "Best universities for computer science in the USA", "Top universities for business in the UK", "Universities for medicine in Germany"
 
-
+**When to use \`program-research\` tool:**
+- For researching specific programs at universities, especially when asked about details of a program (e.g., requirements, application process, etc.)
+- When the user requests information about a specific program at a university
+- example : "What are the requirements for the MBA program at Harvard University?", "What is the application process for the PhD program at MIT?"
 `;
 
 export const regularPrompt =

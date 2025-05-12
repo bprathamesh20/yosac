@@ -21,6 +21,7 @@ import { MessageReasoning } from './message-reasoning';
 import type { UseChatHelpers } from '@ai-sdk/react';
 import { DeepResearchCall, DeepResearchResult } from './deep-research';
 import { UniversityResearchCall, UniversityResearchResult } from './university-research';
+import { ProgramResearchCall, ProgramResearchResult } from './program-research';
 
 const PurePreviewMessage = ({
   chatId,
@@ -189,6 +190,8 @@ const PurePreviewMessage = ({
                         <DeepResearchCall args={args} />
                       ) : toolName === 'universityResearch' ? (
                         <UniversityResearchCall args={args} />
+                      ) : toolName === 'programResearch' ? (
+                        <ProgramResearchCall args={args} />
                       ) : null}
                     </div>
                   );
@@ -222,6 +225,8 @@ const PurePreviewMessage = ({
                         <DeepResearchResult result={result} />
                       ) : toolName === 'universityResearch' ? (
                         <UniversityResearchResult result={result} />
+                      ) : toolName === 'programResearch' ? (
+                        <ProgramResearchResult result={result} />
                       ) : (
                         <pre>{JSON.stringify(result, null, 2)}</pre>
                       )}
