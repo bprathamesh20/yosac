@@ -6,7 +6,9 @@ import { google } from '@ai-sdk/google';
 const photoLink = "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Morgan_Hall_of_Williams_College_in_the_fall_%2827_October_2010%29.jpg/330px-Morgan_Hall_of_Williams_College_in_the_fall_%2827_October_2010%29.jpg";
 
 async function fetchUniversityPhoto(universityName: string): Promise<string | null> {
-  const url = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(universityName)}`;
+  const cleanedName = universityName.replace(/\s*\(.?\)\s/g, '').trim();
+
+  const url = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(cleanedName)}`;
   const response = await fetch(url);
   if (!response.ok) return null;
 
