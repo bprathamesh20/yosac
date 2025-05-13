@@ -1,5 +1,4 @@
 import { cookies } from 'next/headers';
-import { nanoid } from 'nanoid';
 
 import { Chat } from '@/components/chat';
 import { DEFAULT_CHAT_MODEL } from '@/lib/ai/models';
@@ -14,7 +13,8 @@ export const metadata = {
 };
 
 export default async function Page() {
-  const id = nanoid();
+  const id = generateUUID();
+  console.log("Generated ID in app/(chat)/page.tsx:", id);
   const session = await auth();
 
   if (!session) {
