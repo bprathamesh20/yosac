@@ -2,7 +2,7 @@
 
 import type { User } from 'next-auth';
 import { useRouter } from 'next/navigation';
-
+import { Bookmark } from 'lucide-react';
 import { PlusIcon } from '@/components/icons';
 import { SidebarHistory } from '@/components/sidebar-history';
 import { SidebarUserNav } from '@/components/sidebar-user-nav';
@@ -67,6 +67,7 @@ export function AppSidebar({ user }: { user: User | undefined }) {
             }}
             className="flex items-center w-full p-2 rounded-md hover:bg-muted cursor-pointer"
           >
+            <Bookmark className="w-4 h-4 mr-2" />
             <span className="text-sm">Saved Programs</span>
           </Link>
         </div>
