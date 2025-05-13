@@ -59,6 +59,17 @@ export function AppSidebar({ user }: { user: User | undefined }) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
+        <div className="pb-2 px-2">
+          <Link
+            href="/programs"
+            onClick={() => {
+              setOpenMobile(false);
+            }}
+            className="flex items-center w-full p-2 rounded-md hover:bg-muted cursor-pointer"
+          >
+            <span className="text-sm">Saved Programs</span>
+          </Link>
+        </div>
         <SidebarHistory user={user} />
       </SidebarContent>
       <SidebarFooter>{user && <SidebarUserNav user={user} />}</SidebarFooter>
