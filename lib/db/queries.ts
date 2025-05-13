@@ -52,6 +52,15 @@ export async function getUser(email: string): Promise<Array<User>> {
   }
 }
 
+export async function getUserById({ id }: { id: string }): Promise<Array<User>> {
+  try {
+    return await db.select().from(user).where(eq(user.id, id));
+  } catch (error) {
+    console.error('Failed to get user from database');
+    throw error;
+  }
+}
+
 export async function createUser(email: string, password: string) {
   const hashedPassword = generateHashedPassword(password);
 
