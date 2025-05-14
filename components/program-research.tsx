@@ -93,6 +93,8 @@ export function ProgramResearchResult({ result }: {
       highlight3?: string;
       officialLink?: string;
       imageUrls: string[];
+      matchScore?: number;
+      choiceType?: string;
     };
     text?: string;
   },
@@ -182,6 +184,28 @@ export function ProgramResearchResult({ result }: {
         </div>
       )}
       <div className="px-5 py-4 border-b flex flex-col gap-1">
+      {(data.matchScore !== undefined || data.choiceType) && (
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            {data.matchScore !== undefined && (
+              <span className="flex items-center gap-1 bg-purple-100 text-purple-800 px-2 py-1 rounded-md text-xs font-medium">
+                <StarIcon /> Match: {data.matchScore}%
+              </span>
+            )}
+            {data.choiceType && (
+              <span 
+                className={`px-2 py-1 rounded-md text-xs font-medium 
+                  ${data.choiceType.toLowerCase() === 'safe' ? 'bg-green-100 text-green-800' : 
+                    data.choiceType.toLowerCase() === 'ambitious' ? 'bg-red-100 text-red-800' : 
+                    data.choiceType.toLowerCase() === 'target' ? 'bg-yellow-100 text-yellow-800' : 
+                    'bg-gray-100 text-gray-800'}
+                `}
+              >
+                {data.choiceType.charAt(0).toUpperCase() + data.choiceType.slice(1)}
+              </span>
+            )}
+          </div>
+        )}
+
         <div className="text-lg font-bold text-primary">{data.programName}</div>
         <div className="text-sm text-muted-foreground font-medium">{data.universityName}</div>
       </div>
@@ -190,6 +214,8 @@ export function ProgramResearchResult({ result }: {
           <span className="font-semibold">Overview: </span>
           <span className="text-muted-foreground">{data.overview}</span>
         </div>
+
+
         <div>
           <span className="font-semibold">Key Requirements: </span>
           <div className="flex flex-wrap gap-2 mt-1 mb-1">

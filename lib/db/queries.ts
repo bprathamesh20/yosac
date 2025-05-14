@@ -30,6 +30,8 @@ import {
   stream,
   studentProfile,
   savedProgram,
+  Program,
+  program,
 } from './schema';
 import type { ArtifactKind } from '@/components/artifact';
 import { generateUUID } from '../utils';
@@ -573,9 +575,11 @@ export async function createOrUpdateStudentProfile(data: {
   }
 }
 
-export async function saveProgram({
+export async function saveUserProgram({
   userId,
   program,
+  matchScore,
+  choiceType,
 }: {
   userId: string;
   program: {
@@ -596,6 +600,8 @@ export async function saveProgram({
     officialLink?: string;
     imageUrls: string[];
   };
+  matchScore?: number;
+  choiceType?: string;
 }) {
   try {
     return await db
@@ -603,11 +609,45 @@ export async function saveProgram({
       .values({
         userId,
         ...program,
+        matchScore,
+        choiceType,
         createdAt: new Date(),
       })
       .returning();
   } catch (error) {
-    console.error('Failed to save program in database');
+    console.error('Failed to save user program in database');
+    throw error;
+  }
+}
+
+export async function savePublicProgram(programData: {
+  programName: string;
+  universityName: string;
+  overview: string;
+  gpaRequirement?: string;
+  greRequirement?: string;
+  toeflRequirement?: string;
+  ieltsRequirement?: string;
+  requirementsSummary?: string;
+  deadlineHint: string;
+  duration: string;
+  costHint: string;
+  highlight1: string;
+  highlight2: string;
+  highlight3?: string;
+  officialLink?: string;
+  imageUrls: string[];
+}) {
+  try {
+    return await db
+      .insert(program)
+      .values({
+        ...programData,
+        createdAt: new Date(),
+      })
+      .returning();
+  } catch (error) {
+    console.error('Failed to save public program in database');
     throw error;
   }
 }
@@ -629,7 +669,7 @@ export async function getSavedProgramsByUserId({
   }
 }
 
-export async function getSavedProgramByUniversityAndProgramName({
+export async function getProgramByUniversityAndProgramName({
   universityName,
   programName,
 }: {
@@ -637,21 +677,21 @@ export async function getSavedProgramByUniversityAndProgramName({
   programName: string;
 }) {
   try {
-    const [program] = await db
+    const [programResult] = await db
       .select()
-      .from(savedProgram)
+      .from(program)
       .where(
         and(
-          ilike(savedProgram.universityName, `%${universityName}%`),
-          ilike(savedProgram.programName, `%${programName}%`),
+          ilike(program.universityName, `%${universityName}%`),
+          ilike(program.programName, `%${programName}%`),
         ),
       )
-      .orderBy(desc(savedProgram.createdAt))
+      .orderBy(desc(program.createdAt))
       .limit(1);
-    return program;
+    return programResult;
   } catch (error) {
     console.error(
-      'Failed to get saved program by university and program name from database',
+      'Failed to get program by university and program name from database',
     );
     throw error;
   }

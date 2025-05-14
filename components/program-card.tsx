@@ -10,7 +10,7 @@ import Image from 'next/image'; // Added for university logo
 import { useState, useEffect } from 'react'; // Added useState, useEffect
 
 // Placeholder for program tag type
-type ProgramTag = 'Ambitious' | 'Target' | 'Safe';
+type ProgramTag = 'Ambitious' | 'Target' | 'Safe' | string; // Allow string for choiceType
 
 const DEFAULT_LOGO_URL = "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Morgan_Hall_of_Williams_College_in_the_fall_%2827_October_2010%29.jpg/330px-Morgan_Hall_of_Williams_College_in_the_fall_%2827_October_2010%29.jpg";
 
@@ -18,16 +18,6 @@ export function ProgramCard({ program }: { program: SavedProgram }) {
   const router = useRouter();
   const [logoUrl, setLogoUrl] = useState<string>(DEFAULT_LOGO_URL);
   const [showCoreRequirements, setShowCoreRequirements] = useState(false); // New state for visibility
-
-  // Placeholder data - this should eventually come from your program data
-  const placeholderData = {
-    location: 'City, Country',
-    programs: ['Program A', 'Program B'],
-    matchAssessment: Math.floor(Math.random() * (95 - 80 + 1) + 80), // Random between 80-95
-    matchAssessmentDescription: 'Good match based on placeholder criteria',
-    tag: ['Ambitious', 'Target', 'Safe'][Math.floor(Math.random() * 3)] as ProgramTag,
-    estimatedTuition: program.costHint || '$0 / year', // Use costHint or default
-  };
 
   useEffect(() => {
     const fetchLogo = async () => {
@@ -84,12 +74,12 @@ export function ProgramCard({ program }: { program: SavedProgram }) {
   };
 
   const getTagColor = (tag: ProgramTag) => {
-    switch (tag) {
-      case 'Ambitious':
+    switch (tag?.toLowerCase()) { // Use toLowerCase for case-insensitive matching
+      case 'ambitious':
         return 'bg-yellow-100 text-yellow-700';
-      case 'Target':
+      case 'target':
         return 'bg-green-100 text-green-700';
-      case 'Safe':
+      case 'safe':
         return 'bg-blue-100 text-blue-700';
       default:
         return 'bg-gray-100 text-gray-700';
@@ -110,11 +100,11 @@ export function ProgramCard({ program }: { program: SavedProgram }) {
               <h2 className="text-lg font-semibold text-gray-800">{program.universityName}</h2>
               <p className="text-xs text-gray-500 flex items-center">
                 <MapPinIcon size={12} className="mr-1" />
-                {placeholderData.location}
+                {program.universityName.split(',').pop()?.trim() || 'N/A'} {/* Basic location extraction */}
               </p>
             </div>
-            <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${getTagColor(placeholderData.tag)}`}>
-              {placeholderData.tag}
+            <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${getTagColor(program.choiceType || 'N/A')}`}>
+              {program.choiceType || 'N/A'}
             </span>
           </div>
         </div>
@@ -124,20 +114,20 @@ export function ProgramCard({ program }: { program: SavedProgram }) {
       <div className="p-4 space-y-3 flex-grow"> {/* Added flex-grow */}
         <div>
           <p className="text-xs text-gray-500 mb-0.5">Programs:</p>
-          <p className="text-sm text-gray-700">{placeholderData.programs.join(', ')}</p>
+          <p className="text-sm text-gray-700">{program.programName}</p>
         </div>
 
         <div className="bg-blue-50 p-3 rounded-md">
           <div className="flex justify-between items-center">
             <p className="text-xs text-gray-500">Match Assessment:</p>
-            <p className="text-lg font-bold text-blue-600">{placeholderData.matchAssessment}%</p>
+            <p className="text-lg font-bold text-blue-600">{program.matchScore || 'N/A'}%</p>
           </div>
-          <p className="text-xs text-gray-600 mt-0.5">{placeholderData.matchAssessmentDescription}</p>
+          <p className="text-xs text-gray-600 mt-0.5">Based on your profile and program data.</p>
         </div>
 
         <div>
           <p className="text-xs text-gray-500 mb-0.5">Estimated Tuition:</p>
-          <p className="text-sm text-gray-700 font-semibold">{placeholderData.estimatedTuition}</p>
+          <p className="text-sm text-gray-700 font-semibold">{program.costHint || '$0 / year'}</p>
         </div>
 
         <div>
