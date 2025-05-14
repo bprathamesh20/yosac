@@ -619,6 +619,34 @@ export async function getSavedProgramsByUserId({
   }
 }
 
+export async function getSavedProgramByUniversityAndProgramName({
+  universityName,
+  programName,
+}: {
+  universityName: string;
+  programName: string;
+}) {
+  try {
+    const [program] = await db
+      .select()
+      .from(savedProgram)
+      .where(
+        and(
+          eq(savedProgram.universityName, universityName),
+          eq(savedProgram.programName, programName),
+        ),
+      )
+      .orderBy(desc(savedProgram.createdAt)) // Get the latest one if multiple exist
+      .limit(1);
+    return program;
+  } catch (error) {
+    console.error(
+      'Failed to get saved program by university and program name from database',
+    );
+    throw error;
+  }
+}
+
 export async function deleteSavedProgram({
   id,
   userId,
