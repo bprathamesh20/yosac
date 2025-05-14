@@ -10,6 +10,7 @@ import {
   gte,
   inArray,
   lt,
+  ilike,
   type SQL,
 } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/postgres-js';
@@ -641,11 +642,11 @@ export async function getSavedProgramByUniversityAndProgramName({
       .from(savedProgram)
       .where(
         and(
-          eq(savedProgram.universityName, universityName),
-          eq(savedProgram.programName, programName),
+          ilike(savedProgram.universityName, `%${universityName}%`),
+          ilike(savedProgram.programName, `%${programName}%`),
         ),
       )
-      .orderBy(desc(savedProgram.createdAt)) // Get the latest one if multiple exist
+      .orderBy(desc(savedProgram.createdAt))
       .limit(1);
     return program;
   } catch (error) {
