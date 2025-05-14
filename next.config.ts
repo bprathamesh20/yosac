@@ -9,6 +9,18 @@ const nextConfig: NextConfig = {
       {
         hostname: 'avatar.vercel.sh',
       },
+      {
+        protocol: 'https',
+        hostname: 'upload.wikimedia.org',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'en.wikipedia.org', // Good to add this too for Wikipedia images
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
 };
