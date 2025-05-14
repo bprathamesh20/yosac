@@ -100,7 +100,12 @@ export const programResearch = ({ dataStream }: { dataStream?: any }) => tool({
 
 
 
-        return { object: researchedProgramData };
+        return { 
+          object: {
+            ...responseObject,
+            ...researchedProgramData
+          }
+        };
       }
     } catch (error) {
       console.error('[ProgramResearch] Error checking for existing program in DB:', error);
