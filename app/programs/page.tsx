@@ -4,7 +4,8 @@ import { auth } from '@/app/(auth)/auth';
 import { cookies } from 'next/headers';
 import { AppSidebar } from '@/components/app-sidebar';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
-import { ProgramCard } from '@/components/program-card';
+import { generateUUID } from '@/lib/utils';
+import { ClientProgramList } from '@/components/client-program-list';
   
 export default async function ProgramsPage() {  
   const session = await auth();  
@@ -15,6 +16,9 @@ export default async function ProgramsPage() {
 
   const cookieStore = await cookies();
   const isCollapsed = cookieStore.get('sidebar:state')?.value !== 'true';
+    
+  // Generate a unique chatId for this session
+  const chatId = generateUUID();
     
   const savedPrograms = await getSavedProgramsByUserId({  
     userId: session.user.id,  
@@ -32,11 +36,10 @@ export default async function ProgramsPage() {
               <p>You haven't saved any programs yet.</p>  
             </div>  
           ) : (  
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">  
-              {savedPrograms.map((program) => (  
-                <ProgramCard key={program.id} program={program} />  
-              ))}  
-            </div>  
+            <ClientProgramList 
+              programs={savedPrograms} 
+              chatId={chatId}
+            />
           )}  
         </div>
       </SidebarInset>

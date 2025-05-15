@@ -14,7 +14,14 @@ type ProgramTag = 'Ambitious' | 'Target' | 'Safe' | string; // Allow string for 
 
 const DEFAULT_LOGO_URL = "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Morgan_Hall_of_Williams_College_in_the_fall_%2827_October_2010%29.jpg/330px-Morgan_Hall_of_Williams_College_in_the_fall_%2827_October_2010%29.jpg";
 
-export function ProgramCard({ program }: { program: SavedProgram }) {
+interface ProgramCardProps {
+  program: SavedProgram;
+  isSelected?: boolean;
+  onSelectProgram?: (isSelected: boolean) => void;
+  canSelectMore?: boolean;
+}
+
+export function ProgramCard({ program, isSelected, onSelectProgram, canSelectMore = true }: ProgramCardProps) {
   const router = useRouter();
   const [logoUrl, setLogoUrl] = useState<string>(DEFAULT_LOGO_URL);
   const [showCoreRequirements, setShowCoreRequirements] = useState(false); // New state for visibility
@@ -154,8 +161,24 @@ export function ProgramCard({ program }: { program: SavedProgram }) {
       {/* Footer Section */}
       <div className="p-3 border-t bg-gray-50 flex justify-between items-center">
         <div className="flex items-center space-x-2">
-          <input type="checkbox" id={`compare-${program.id}`} className="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
-          <label htmlFor={`compare-${program.id}`} className="text-xs text-gray-600 cursor-pointer">Compare</label>
+          <input 
+            type="checkbox" 
+            id={`compare-${program.id}`} 
+            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 disabled:opacity-50" 
+            checked={isSelected}
+            onChange={(e) => {
+              if (onSelectProgram) {
+                onSelectProgram(e.target.checked);
+              }
+            }}
+            disabled={!isSelected && !canSelectMore} // Disable if trying to select more than allowed
+          />
+          <label 
+            htmlFor={`compare-${program.id}`} 
+            className={`text-xs text-gray-600 cursor-pointer ${(!isSelected && !canSelectMore) ? 'cursor-not-allowed opacity-50' : ''}`}
+          >
+            Compare
+          </label>
         </div>
         <div className="flex items-center space-x-2">
           <Button
