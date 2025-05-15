@@ -220,8 +220,9 @@ export default async function StudentProfilePage () {
                         <span className="text-muted-foreground">months</span>
                       </div>
                       <p className="text-sm text-muted-foreground">
-                        {Math.floor(profile.workExpMonths / 12)} years,{' '}
-                        {profile.workExpMonths % 12} months
+                        {typeof profile.workExpMonths === 'number' && profile.workExpMonths > 0
+                          ? `${Math.floor(profile.workExpMonths / 12)} years, ${profile.workExpMonths % 12} months`
+                          : 'N/A'}
                       </p>
                     </div>
                   </div>
