@@ -713,3 +713,52 @@ export async function deleteSavedProgram({
     throw error;
   }
 }
+
+export async function getTwoSavedPrograms({
+  program1university,
+  program1name,
+  program2university,
+  program2name,
+  userId,
+}: {
+  program1university: string;
+  program1name: string;
+  program2university: string;
+  program2name: string;
+  userId: string;
+}) {
+  try {
+    const [program1] = await db
+      .select()
+      .from(savedProgram)
+      .where(
+        and(
+          eq(savedProgram.userId, userId),
+          ilike(savedProgram.universityName, `%${program1university}%`),
+          ilike(savedProgram.programName, `%${program1name}%`),
+        ),
+      )
+      .orderBy(desc(savedProgram.createdAt))
+      .limit(1);
+
+    const [program2] = await db
+      .select()
+      .from(savedProgram)
+      .where(
+        and(
+          eq(savedProgram.userId, userId),
+          ilike(savedProgram.universityName, `%${program2university}%`),
+          ilike(savedProgram.programName, `%${program2name}%`),
+        ),
+      )
+      .orderBy(desc(savedProgram.createdAt))
+      .limit(1);
+
+    return { program1, program2 };
+  } catch (error) {
+    console.error(
+      'Failed to get two saved programs by university and program name from database',
+    );
+    throw error;
+  }
+}

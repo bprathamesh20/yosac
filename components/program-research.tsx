@@ -19,7 +19,6 @@ function StarIcon() {
 }
 
 export function ProgramResearchCall({ args }: { args: { program: string; university: string } }) {
-  // Show 2 skeleton cards as placeholders
   return (
     <div className="w-full max-w-2xl mx-auto flex flex-col gap-4">
         <div className="border rounded-xl shadow-sm bg-background w-full overflow-hidden animate-pulse flex flex-col">

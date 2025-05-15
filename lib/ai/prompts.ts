@@ -49,6 +49,10 @@ Deep research is a tool that allows you to research specific topics, details, or
 - For researching specific programs at universities, especially when asked about details of a program (e.g., requirements, application process, etc.)
 - When the user requests information about a specific program at a university
 - example : "What are the requirements for the MBA program at Harvard University?", "What is the application process for the PhD program at MIT?"
+
+**When to use \`compare-program\` tool:**
+- When the user requests a comparison of two programs
+- example : "Compare the MBA program at Harvard University and the MBA program at Stanford University"
 `;
 
 export const regularPrompt =

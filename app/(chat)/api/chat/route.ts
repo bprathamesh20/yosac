@@ -37,6 +37,7 @@ import type { Chat } from '@/lib/db/schema';
 import { deepResearch } from '@/lib/ai/tools/deep-research';
 import { universityResearch } from '@/lib/ai/tools/university-research';
 import { programResearch } from '@/lib/ai/tools/program-research';
+import { compareProgram } from '@/lib/ai/tools/compare-program';
 export const maxDuration = 60;
 
 let globalStreamContext: ResumableStreamContext | null = null;
@@ -161,6 +162,7 @@ export async function POST(request: Request) {
               ? []
               : [
                   'getWeather',
+                  'compareProgram',
                   'deepResearch',
                   'universityResearch',
                   'programResearch',
@@ -175,6 +177,7 @@ export async function POST(request: Request) {
             deepResearch: deepResearch({ dataStream }),
             universityResearch: universityResearch({ dataStream }),
             programResearch: programResearch({ dataStream }),
+            compareProgram: compareProgram({ dataStream }),
             createDocument: createDocument({ session, dataStream }),
             updateDocument: updateDocument({ session, dataStream }),
             requestSuggestions: requestSuggestions({

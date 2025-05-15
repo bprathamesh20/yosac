@@ -22,6 +22,7 @@ import type { UseChatHelpers } from '@ai-sdk/react';
 import { DeepResearchCall, DeepResearchResult } from './deep-research';
 import { UniversityResearchCall, UniversityResearchResult } from './university-research';
 import { ProgramResearchCall, ProgramResearchResult } from './program-research';
+import { CompareProgramCall, CompareProgramResult } from './compare-program';
 
 const PurePreviewMessage = ({
   chatId,
@@ -192,6 +193,8 @@ const PurePreviewMessage = ({
                         <UniversityResearchCall args={args} />
                       ) : toolName === 'programResearch' ? (
                         <ProgramResearchCall args={args} />
+                      ) : toolName === 'compareProgram' ? (
+                        <CompareProgramCall args={args} />
                       ) : null}
                     </div>
                   );
@@ -227,6 +230,8 @@ const PurePreviewMessage = ({
                         <UniversityResearchResult result={result} />
                       ) : toolName === 'programResearch' ? (
                         <ProgramResearchResult result={result} />
+                      ) : toolName === 'compareProgram' ? (
+                        <CompareProgramResult result={result} />
                       ) : (
                         <pre>{JSON.stringify(result, null, 2)}</pre>
                       )}
