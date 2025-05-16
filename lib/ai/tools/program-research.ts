@@ -88,7 +88,7 @@ export const programResearch = ({ dataStream }: { dataStream?: any }) => tool({
           model: google('gemini-2.0-flash'),
           output: 'object',
           schema: z.object({
-            matchScore: z.number().describe("Match score of the program for the student between 0 and 100"),
+            matchScore: z.number().int().min(0).max(100).describe("Match score of the program for the student between 0 and 100, interger no floating point"),
             choiceType: z.string().optional().describe("Type of choice could be 'safe', 'ambitious', 'target'"),
           }),
           prompt: `Give a match score of the program for the student between 0 and 100 and a type of choice could be 'safe', 'ambitious', 'target' based on comparison of the program and the student profile.
@@ -178,7 +178,7 @@ Format as a readable list.`;
           highlight1: z.string().describe("Highlight 1 of the program"),
           highlight2: z.string().describe("Highlight 2 of the program"),
           highlight3: z.string().describe("Highlight 3 of the program").optional(),
-          matchScore: z.number().describe("Match score of the program for the student between 0 and 100"),
+          matchScore: z.number().int().min(0).max(100).describe("Match score of the program for the student between 0 and 100"),
           choiceType: z.string().optional().describe("Type of choice could be 'safe', 'ambitious', 'target'"),
           imageUrls: z.array(z.string()), // This will be overwritten
           officialLink: z.string().describe("Official link of the program"),
