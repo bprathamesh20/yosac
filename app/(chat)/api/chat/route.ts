@@ -38,6 +38,7 @@ import { deepResearch } from '@/lib/ai/tools/deep-research';
 import { universityResearch } from '@/lib/ai/tools/university-research';
 import { programResearch } from '@/lib/ai/tools/program-research';
 import { compareProgram } from '@/lib/ai/tools/compare-program';
+import { personalizedShortlistings } from '@/lib/ai/tools/personalized-shortlistings';
 export const maxDuration = 60;
 
 let globalStreamContext: ResumableStreamContext | null = null;
@@ -166,6 +167,7 @@ export async function POST(request: Request) {
                   'deepResearch',
                   'universityResearch',
                   'programResearch',
+                  'personalizedShortlistings',
                   'createDocument',
                   'updateDocument',
                   'requestSuggestions',
@@ -178,6 +180,7 @@ export async function POST(request: Request) {
             universityResearch: universityResearch({ dataStream }),
             programResearch: programResearch({ dataStream }),
             compareProgram: compareProgram({ dataStream }),
+            personalizedShortlistings: personalizedShortlistings({ dataStream }),
             createDocument: createDocument({ session, dataStream }),
             updateDocument: updateDocument({ session, dataStream }),
             requestSuggestions: requestSuggestions({

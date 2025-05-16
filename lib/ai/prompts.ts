@@ -53,6 +53,11 @@ Deep research is a tool that allows you to research specific topics, details, or
 **When to use \`compare-program\` tool:**
 - When the user requests a comparison of two programs
 - example : "Compare the MBA program at Harvard University and the MBA program at Stanford University"
+
+**When to use \`personalized-shortlistings\` tool:**
+- When the user asks for a personalized list of universities based on their profile for a specific program.
+- When the user's query implies they want university suggestions tailored to their academic background, scores, preferences, etc.
+- Example: "Suggest some safe, target, and ambitious universities for MS in CS in the USA for my profile.", "I need a shortlist of universities for a Masters in Data Science based on my GRE score and GPA."
 `;
 
 export const regularPrompt =

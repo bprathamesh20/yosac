@@ -23,6 +23,7 @@ import { DeepResearchCall, DeepResearchResult } from './deep-research';
 import { UniversityResearchCall, UniversityResearchResult } from './university-research';
 import { ProgramResearchCall, ProgramResearchResult } from './program-research';
 import { CompareProgramCall, CompareProgramResult } from './compare-program';
+import { PersonalizedShortlistingsCall, PersonalizedShortlistingsResult } from './personalized-shortlistings';
 
 const PurePreviewMessage = ({
   chatId,
@@ -195,6 +196,8 @@ const PurePreviewMessage = ({
                         <ProgramResearchCall args={args} />
                       ) : toolName === 'compareProgram' ? (
                         <CompareProgramCall args={args} />
+                      ) : toolName === 'personalizedShortlistings' ? (
+                        <PersonalizedShortlistingsCall args={args} />
                       ) : null}
                     </div>
                   );
@@ -232,6 +235,8 @@ const PurePreviewMessage = ({
                         <ProgramResearchResult result={result} />
                       ) : toolName === 'compareProgram' ? (
                         <CompareProgramResult result={result} />
+                      ) : toolName === 'personalizedShortlistings' ? (
+                        <PersonalizedShortlistingsResult result={result} />
                       ) : (
                         <pre>{JSON.stringify(result, null, 2)}</pre>
                       )}
