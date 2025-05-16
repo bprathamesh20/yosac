@@ -35,16 +35,19 @@ export function PersonalizedShortlistingsCall({ args }: { args: { program: strin
   useEffect(() => {
     const intervalId = setInterval(() => {
       setCurrentMessageIndex((prevIndex) => (prevIndex + 1) % loadingMessages.length);
-    }, 3000); // Change message every 3 seconds
+    }, 10000); // Change message every 10 seconds
 
     return () => clearInterval(intervalId); // Cleanup on component unmount
   }, []);
 
   return (
     <div>
-      <div className="mb-4 text-center text-muted-foreground">
-        <p className="text-lg font-medium">{loadingMessages[currentMessageIndex]}</p>
-        <p className="text-sm">Please wait while we prepare your university shortlist for {args.program}.</p>
+      <div className="mb-6 flex items-center justify-between text-base text-muted-foreground">
+        <div className="flex items-center gap-2">
+          <LoaderIcon className="animate-spin h-5 w-5" />
+          <span className="text-right">{loadingMessages[currentMessageIndex]}</span>
+        </div>
+        
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {[1, 2].map((_, i) => ( // Show 2 skeleton cards for a 2-column grid potential

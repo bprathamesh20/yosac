@@ -53,7 +53,7 @@ export const personalizedShortlistings = ({ dataStream }: { dataStream?: any }) 
     Student Profile: ${JSON.stringify(student)}
     Researching universities only for the country: ${country}
 
-    Give me list of universities for ms in computer science in us for the above profile , Divide the results in following groups
+    Give me list of universities for MS in ${student?.targetMajor} in ${country} for the above profile , Divide the results in following groups
 
     Safe: Very high tos high chance of admission : select 3 universities in this category.
     Target: Good match for your profile : select 2 universities in this category.
