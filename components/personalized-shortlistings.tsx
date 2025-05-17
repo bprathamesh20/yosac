@@ -14,7 +14,7 @@ interface UniversityShortlist {
   choiceType: 'safe' | 'target' | 'ambitious' | string; // Allow string for broader compatibility
   tuitionCost: number; // e.g., 52000, will be formatted to ~$52k/yr
   duration: string; // e.g., "2 Years"
-  photo: string; // URL for university logo
+  photo: string; 
 }
 
 // Icons using emojis as per the visual reference for tags
@@ -110,28 +110,9 @@ export function PersonalizedShortlistingsResult({ result }: {
     const uniId = `${uni.name}-${uni.program}`;
     setSavingStates(prev => ({ ...prev, [uniId]: true }));
     
-    // Simulate API call for demo purposes
+
     await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // TODO: Implement actual API call to save the program
-    // Example:
-    // try {
-    //   const response = await fetch('/api/user/saved-programs', { // Adjust endpoint
-    //     method: 'POST',
-    //     headers: { 'Content-Type': 'application/json' },
-    //     body: JSON.stringify({ university: uni }), 
-    //   });
-    //   if (response.ok) {
-    //     toast.success(`${uni.name} - ${uni.program} saved!`);
-    //   } else {
-    //     const errorData = await response.json();
-    //     throw new Error(errorData.message || 'Failed to save program');
-    //   }
-    // } catch (error: any) {
-    //   toast.error(`Error: ${error.message || 'Could not save program.'}`);
-    // } finally {
-    //   setSavingStates(prev => ({ ...prev, [uniId]: false }));
-    // }
+
     toast.success(`${uni.name} - ${uni.program} has been notionally saved!`); // Placeholder
     setSavingStates(prev => ({ ...prev, [uniId]: false }));
   };

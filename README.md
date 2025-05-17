@@ -1,62 +1,59 @@
-<a href="https://chat.vercel.ai/">
-  <img alt="Next.js 14 and App Router-ready AI chatbot." src="app/(chat)/opengraph-image.png">
-  <h1 align="center">Chat SDK</h1>
-</a>
+# Yosac - Your Overseas Study Advisor & Counsellor
 
-<p align="center">
-    Chat SDK is a free, open-source template built with Next.js and the AI SDK that helps you quickly build powerful chatbot applications.
-</p>
+Yosac is an intelligent agent designed to assist students in planning their overseas education. It acts as a personalized college counsellor, helping students navigate the complex process of shortlisting universities and programs that align with their academic profiles, scores, and preferences.
 
-<p align="center">
-  <a href="https://chat-sdk.dev"><strong>Read Docs</strong></a> ·
-  <a href="#features"><strong>Features</strong></a> ·
-  <a href="#model-providers"><strong>Model Providers</strong></a> ·
-  <a href="#deploy-your-own"><strong>Deploy Your Own</strong></a> ·
-  <a href="#running-locally"><strong>Running locally</strong></a>
-</p>
-<br/>
+## Key Features
 
-## Features
+-   **Personalized Shortlisting:** Yosac can generate tailored university shortlists (Safe, Target, Ambitious) based on individual student profiles, including academic scores, test results (like GRE, TOEFL), and program interests.
+-   **In-depth Research:** Leverages a suite of specialized research tools to provide comprehensive information about universities, programs, and related requirements.
 
-- [Next.js](https://nextjs.org) App Router
-  - Advanced routing for seamless navigation and performance
-  - React Server Components (RSCs) and Server Actions for server-side rendering and increased performance
-- [AI SDK](https://sdk.vercel.ai/docs)
-  - Unified API for generating text, structured objects, and tool calls with LLMs
-  - Hooks for building dynamic chat and generative user interfaces
-  - Supports xAI (default), OpenAI, Fireworks, and other model providers
-- [shadcn/ui](https://ui.shadcn.com)
-  - Styling with [Tailwind CSS](https://tailwindcss.com)
-  - Component primitives from [Radix UI](https://radix-ui.com) for accessibility and flexibility
-- Data Persistence
-  - [Neon Serverless Postgres](https://vercel.com/marketplace/neon) for saving chat history and user data
-  - [Vercel Blob](https://vercel.com/storage/blob) for efficient file storage
-- [Auth.js](https://authjs.dev)
-  - Simple and secure authentication
+## Deep Research Tools
 
-## Model Providers
+Yosac utilizes a collection of "Deep Research Tools" to gather and present detailed information. These tools are activated based on the user's query to provide the most relevant results:
 
-This template ships with [xAI](https://x.ai) `grok-2-1212` as the default chat model. However, with the [AI SDK](https://sdk.vercel.ai/docs), you can switch LLM providers to [OpenAI](https://openai.com), [Anthropic](https://anthropic.com), [Cohere](https://cohere.com/), and [many more](https://sdk.vercel.ai/providers/ai-sdk-providers) with just a few lines of code.
+### 1. `deep-research`
 
-## Deploy Your Own
+-   **Purpose:** Used for researching specific topics, details, or general information related to studying abroad. This can include information on colleges, scholarships, visa requirements, cost of living, etc.
+-   **When to use:** When the query requires in-depth or detailed research beyond general knowledge or simple facts.
 
-You can deploy your own version of the Next.js AI Chatbot to Vercel with one click:
+### 2. `university-research`
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fai-chatbot&env=AUTH_SECRET&envDescription=Generate%20a%20random%20secret%20to%20use%20for%20authentication&envLink=https%3A%2F%2Fgenerate-secret.vercel.app%2F32&project-name=my-awesome-chatbot&repository-name=my-awesome-chatbot&demo-title=AI%20Chatbot&demo-description=An%20Open-Source%20AI%20Chatbot%20Template%20Built%20With%20Next.js%20and%20the%20AI%20SDK%20by%20Vercel&demo-url=https%3A%2F%2Fchat.vercel.ai&products=%5B%7B%22type%22%3A%22integration%22%2C%22protocol%22%3A%22ai%22%2C%22productSlug%22%3A%22grok%22%2C%22integrationSlug%22%3A%22xai%22%7D%2C%7B%22type%22%3A%22integration%22%2C%22protocol%22%3A%22storage%22%2C%22productSlug%22%3A%22neon%22%2C%22integrationSlug%22%3A%22neon%22%7D%2C%7B%22type%22%3A%22blob%22%7D%5D)
+-   **Purpose:** Specifically designed for researching universities.
+-   **When to use:**
+    -   When asked about top universities for a particular course or in general within a country.
+    -   When the user requests a list or comparison of universities based on rankings or reputation.
+-   **Example Queries:**
+    -   "Best universities for computer science in the USA"
+    -   "Top universities for business in the UK"
+    -   "Universities for medicine in Germany"
 
-## Running locally
+### 3. `program-research`
 
-You will need to use the environment variables [defined in `.env.example`](.env.example) to run Next.js AI Chatbot. It's recommended you use [Vercel Environment Variables](https://vercel.com/docs/projects/environment-variables) for this, but a `.env` file is all that is necessary.
+-   **Purpose:** Focuses on researching specific academic programs at universities.
+-   **When to use:**
+    -   When asked about details of a specific program (e.g., admission requirements, application process, curriculum, faculty).
+    -   When the user requests information about a particular program at a named university.
+-   **Example Queries:**
+    -   "What are the requirements for the MBA program at Harvard University?"
+    -   "What is the application process for the PhD program at MIT?"
 
-> Note: You should not commit your `.env` file or it will expose secrets that will allow others to control access to your various AI and authentication provider accounts.
+### 4. `compare-program`
 
-1. Install Vercel CLI: `npm i -g vercel`
-2. Link local instance with Vercel and GitHub accounts (creates `.vercel` directory): `vercel link`
-3. Download your environment variables: `vercel env pull`
+-   **Purpose:** Used for directly comparing two academic programs.
+-   **When to use:** When the user explicitly requests a comparison between two programs.
+-   **Example Query:**
+    -   "Compare the MBA program at Harvard University and the MBA program at Stanford University"
 
-```bash
-pnpm install
-pnpm dev
-```
+### 5. `personalized-shortlistings`
 
-Your app template should now be running on [localhost:3000](http://localhost:3000).
+-   **Purpose:** Generates a personalized list of universities categorized as Safe, Target, and Ambitious, tailored to the student's profile for a specific program.
+-   **When to use:**
+    -   When the user asks for a personalized list of universities based on their profile.
+    -   When the user's query implies they want university suggestions tailored to their academic background, scores (GPA, GRE, etc.), and preferences.
+-   **Example Queries:**
+    -   "Suggest some safe, target, and ambitious universities for MS in CS in the USA for my profile."
+    -   "I need a shortlist of universities for a Masters in Data Science based on my GRE score and GPA."
+
+---
+
+This README provides a basic overview of Yosac and its capabilities. As the project evolves, this document will be updated to reflect new features and functionalities.
