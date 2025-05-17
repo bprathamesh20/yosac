@@ -9,9 +9,10 @@ frontend:
       commands:
         - pnpm run build             # use pnpm to build
   artifacts:
-    baseDirectory: dist
+    baseDirectory: .next
     files:
       - '**/*'
   cache:
     paths:
-      - node_modules/**/* 
+      - node_modules/**/*
+      - .next/cache/**/* 
