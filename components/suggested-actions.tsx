@@ -29,9 +29,9 @@ function PureSuggestedActions({
       action: `Tell me about masters programs at TU Berlin`,
     },
     {
-      title: 'Best universities',
-      label: `for business administration in UK`,
-      action: `Best universities for business administration in UK`,
+      title: 'Shortlist',
+      label: `Best universities in Germany for my profile`,
+      action: `Shortlist best universities in Germany for my profile`,
     },
     {
       title: 'Tell me about',
