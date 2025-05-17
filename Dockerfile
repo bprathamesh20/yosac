@@ -1,20 +1,24 @@
 FROM node:18-alpine AS base
+# Activate pnpm globally for all stages inheriting from base
+RUN corepack enable \
+  && corepack prepare pnpm@latest --activate
 
 FROM base AS deps
 # Install dependencies required for pnpm and potentially native modules
-RUN apk add --no-cache libc6-compat curl \
-  && corepack enable \
-  && corepack prepare pnpm@latest --activate
+# corepack is already active from the base stage
+RUN apk add --no-cache libc6-compat curl
 
 WORKDIR /app
 
 # Copy package manager files and install dependencies
 # This layer is cached when these files don't change
 COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --frozen-lockfile # pnpm is available due to base stage setup
 
 FROM base AS builder
 WORKDIR /app
+
+# corepack and pnpm are available from the base stage
 
 # Copy installed dependencies and the rest of the application code
 COPY --from=deps /app/node_modules ./node_modules
@@ -24,11 +28,13 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED 1
 
 # Build the Next.js application
-RUN pnpm build
+RUN pnpm build # pnpm is available
 
 # --- Runner Stage ---
 FROM base AS runner
 WORKDIR /app
+
+# corepack and pnpm are available from the base stage for the CMD instruction
 
 ENV NODE_ENV production
 ENV NEXT_TELEMETRY_DISABLED 1
@@ -59,6 +65,6 @@ EXPOSE 3000
 ENV PORT 3000
 
 # Start the Next.js application using pnpm
-# This relies on corepack being available in the base image to execute pnpm
-# and your package.json having a "start" script (e.g., "next start")
+# This relies on corepack being available in the base image (and prepared in base stage)
+# to execute pnpm and your package.json having a "start" script (e.g., "next start")
 CMD ["pnpm", "start"] 
