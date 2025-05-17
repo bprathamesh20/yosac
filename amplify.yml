@@ -1,0 +1,17 @@
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - npm install -g pnpm        # install pnpm globally
+        - pnpm install               # now pnpm is available
+    build:
+      commands:
+        - pnpm run build             # use pnpm to build
+  artifacts:
+    baseDirectory: dist
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/* 
