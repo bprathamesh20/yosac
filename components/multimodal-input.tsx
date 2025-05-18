@@ -60,41 +60,60 @@ function PureMultimodalInput({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { width } = useWindowSize();
   const [isMultiline, setIsMultiline] = useState(false);
+  const metricsRef = useRef<{single: number; padTop: number; padBottom: number}>();
 
   const checkMultiline = useCallback(() => {
-    if (textareaRef.current) {
-      const { value, scrollHeight } = textareaRef.current;
-      const lineCount = value.split('\n').length;
+    if (!textareaRef.current) return;
 
-      const computedStyle = getComputedStyle(textareaRef.current);
-      let singleLineTextHeight = 20; // Default estimate
-
-      const explicitLineHeight = computedStyle.lineHeight;
-      if (explicitLineHeight && explicitLineHeight !== 'normal') {
-        singleLineTextHeight = parseFloat(explicitLineHeight);
-      } else {
-        const fontSize = parseFloat(computedStyle.fontSize);
-        if (!isNaN(fontSize)) {
-          singleLineTextHeight = fontSize * 1.2; // Common heuristic for 'normal' line height
-        }
-      }
-      
-      const paddingTop = parseFloat(computedStyle.paddingTop) || 0;
-      const paddingBottom = parseFloat(computedStyle.paddingBottom) || 0;
-
-      // Threshold is the height of one line of text plus padding, with a small buffer
-      const thresholdHeight = paddingTop + singleLineTextHeight + paddingBottom + 5; 
-
-      setIsMultiline(lineCount > 1 || scrollHeight > thresholdHeight);
-    } else {
-      setIsMultiline(false);
+    if (!metricsRef.current) {
+      const { value } = textareaRef.current;
+      setIsMultiline(value.includes('\n'));
+      return;
     }
+
+    // When metrics are available, use the more accurate scrollHeight check
+    const { value, scrollHeight: currentTextareaScrollHeight } = textareaRef.current;
+    const lineCount = value.split('\n').length;
+
+    const { single, padTop, padBottom } = metricsRef.current;
+    const singleLineThreshold = padTop + single + padBottom + 5;
+
+    setIsMultiline(lineCount > 1 || currentTextareaScrollHeight > singleLineThreshold);
   }, [textareaRef, setIsMultiline]);
 
   const adjustHeight = useCallback(() => {
     if (textareaRef.current) {
+      if (!metricsRef.current) {
+        const computedStyle = getComputedStyle(textareaRef.current);
+        let singleLineTextHeight = 20; // Default estimate
+        const explicitLineHeight = computedStyle.lineHeight;
+        if (explicitLineHeight && explicitLineHeight !== 'normal') {
+          singleLineTextHeight = parseFloat(explicitLineHeight);
+        } else {
+          const fontSize = parseFloat(computedStyle.fontSize);
+          if (!isNaN(fontSize)) {
+            singleLineTextHeight = fontSize * 1.2;
+          }
+        }
+        metricsRef.current = {
+          single: singleLineTextHeight,
+          padTop: parseFloat(computedStyle.paddingTop) || 0,
+          padBottom: parseFloat(computedStyle.paddingBottom) || 0,
+        };
+      }
+
       textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight + 2}px`;
+      const desiredContentHeight = textareaRef.current.scrollHeight + 2; // Full content height + buffer
+
+      const { single, padTop, padBottom } = metricsRef.current;
+      const fourLineDisplayHeight = (single * 4) + padTop + padBottom;
+
+      const heightLimitedToFourLines = Math.min(desiredContentHeight, fourLineDisplayHeight);
+      
+      // const maxHeight75dvh = window.innerHeight * 0.75; // Removed: Rely on CSS max-height
+      const finalHeight = heightLimitedToFourLines; // Rely on CSS max-height
+
+      textareaRef.current.style.height = `${finalHeight}px`;
       checkMultiline();
     }
   }, [textareaRef, checkMultiline]);
@@ -307,7 +326,7 @@ function PureMultimodalInput({
           value={input}
           onChange={handleInput}
           className={cx(
-            'w-full min-h-[24px] max-h-[calc(75dvh)] overflow-hidden resize-none !text-base bg-transparent border-0 outline-none focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0',
+            `w-full min-h-[24px] max-h-[calc(75dvh)] ${isMultiline ? 'overflow-y-auto' : 'overflow-hidden'} resize-none !text-base bg-transparent border-0 outline-none focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0`,
             isMultiline
               ? 'py-3 px-3'
               : 'py-3 pr-20 pl-3',
