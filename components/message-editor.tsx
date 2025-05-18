@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { ChatRequestOptions, Message } from 'ai';
 import { Button } from './ui/button';

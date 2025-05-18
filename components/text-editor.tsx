@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { exampleSetup } from 'prosemirror-example-setup';
 import { inputRules } from 'prosemirror-inputrules';

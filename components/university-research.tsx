@@ -1,3 +1,4 @@
+"use client";
 import { useState } from 'react';
 import { LoaderIcon } from './icons';
 import { Skeleton } from './ui/skeleton';

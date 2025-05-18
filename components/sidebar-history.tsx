@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { isToday, isYesterday, subMonths, subWeeks } from 'date-fns';
 import { useParams, useRouter } from 'next/navigation';

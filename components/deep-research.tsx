@@ -1,3 +1,4 @@
+"use client";
 import { useState } from 'react';  
 import { GlobeIcon, PaperclipIcon, LoaderIcon } from './icons'; // Updated icons
   

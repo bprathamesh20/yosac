@@ -1,4 +1,4 @@
-'use client' // Add this directive for client-side hooks
+"use client";
 
 import type { SavedProgram } from '@/lib/db/schema';
 import { CheckSquare, ChevronDown, MapPinIcon, TrashIcon, ChevronUp } from 'lucide-react'; // Added ChevronUp

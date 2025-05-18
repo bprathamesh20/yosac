@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { EditorView } from '@codemirror/view';
 import { EditorState, Transaction } from '@codemirror/state';

@@ -1,3 +1,4 @@
+"use client";
 import { useState, useEffect } from 'react';
 import { Skeleton } from './ui/skeleton';
 import { Button } from './ui/button';

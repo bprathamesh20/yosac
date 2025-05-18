@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import React, { useState } from 'react';
 import type { SavedProgram } from '@/lib/db/schema';
