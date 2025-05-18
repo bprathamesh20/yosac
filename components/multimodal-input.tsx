@@ -59,6 +59,45 @@ function PureMultimodalInput({
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { width } = useWindowSize();
+  const [isMultiline, setIsMultiline] = useState(false);
+
+  const checkMultiline = useCallback(() => {
+    if (textareaRef.current) {
+      const { value, scrollHeight } = textareaRef.current;
+      const lineCount = value.split('\n').length;
+
+      const computedStyle = getComputedStyle(textareaRef.current);
+      let singleLineTextHeight = 20; // Default estimate
+
+      const explicitLineHeight = computedStyle.lineHeight;
+      if (explicitLineHeight && explicitLineHeight !== 'normal') {
+        singleLineTextHeight = parseFloat(explicitLineHeight);
+      } else {
+        const fontSize = parseFloat(computedStyle.fontSize);
+        if (!isNaN(fontSize)) {
+          singleLineTextHeight = fontSize * 1.2; // Common heuristic for 'normal' line height
+        }
+      }
+      
+      const paddingTop = parseFloat(computedStyle.paddingTop) || 0;
+      const paddingBottom = parseFloat(computedStyle.paddingBottom) || 0;
+
+      // Threshold is the height of one line of text plus padding, with a small buffer
+      const thresholdHeight = paddingTop + singleLineTextHeight + paddingBottom + 5; 
+
+      setIsMultiline(lineCount > 1 || scrollHeight > thresholdHeight);
+    } else {
+      setIsMultiline(false);
+    }
+  }, [textareaRef, setIsMultiline]);
+
+  const adjustHeight = useCallback(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight + 2}px`;
+      checkMultiline();
+    }
+  }, [textareaRef, checkMultiline]);
 
   useEffect(() => {
     if (textareaRef.current) {
@@ -66,17 +105,11 @@ function PureMultimodalInput({
     }
   }, []);
 
-  const adjustHeight = () => {
-    if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight + 2}px`;
-    }
-  };
-
   const resetHeight = () => {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
       textareaRef.current.style.height = '98px';
+      checkMultiline();
     }
   };
 
@@ -99,7 +132,8 @@ function PureMultimodalInput({
 
   useEffect(() => {
     setLocalStorageInput(input);
-  }, [input, setLocalStorageInput]);
+    adjustHeight();
+  }, [input, setLocalStorageInput, adjustHeight]);
 
   const handleInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(event.target.value);
@@ -118,7 +152,6 @@ function PureMultimodalInput({
 
     setAttachments([]);
     setLocalStorageInput('');
-    resetHeight();
 
     if (width && width > 768) {
       textareaRef.current?.focus();
@@ -194,7 +227,7 @@ function PureMultimodalInput({
   }, [status, scrollToBottom]);
 
   return (
-    <div className="relative w-full flex flex-col gap-4">
+    <div className="relative w-full flex flex-col gap-4 z-10">
       <AnimatePresence>
         {!isAtBottom && (
           <motion.div
@@ -262,48 +295,71 @@ function PureMultimodalInput({
         </div>
       )}
 
-      <Textarea
-        data-testid="multimodal-input"
-        ref={textareaRef}
-        placeholder="Send a message..."
-        value={input}
-        onChange={handleInput}
-        className={cx(
-          'min-h-[24px] max-h-[calc(75dvh)] overflow-hidden resize-none rounded-2xl !text-base bg-muted pb-10 dark:border-zinc-700',
-          className,
+      <div className={cx(
+          "relative w-full rounded-2xl border bg-muted",
+          isMultiline ? "flex flex-col" : ""
         )}
-        rows={2}
-        autoFocus
-        onKeyDown={(event) => {
-          if (
-            event.key === 'Enter' &&
-            !event.shiftKey &&
-            !event.nativeEvent.isComposing
-          ) {
-            event.preventDefault();
+      >
+        <Textarea
+          data-testid="multimodal-input"
+          ref={textareaRef}
+          placeholder="Send a message..."
+          value={input}
+          onChange={handleInput}
+          className={cx(
+            'w-full min-h-[24px] max-h-[calc(75dvh)] overflow-hidden resize-none !text-base bg-transparent border-0 outline-none focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0',
+            isMultiline
+              ? 'py-3 px-3'
+              : 'py-3 pr-20 pl-3',
+            className,
+          )}
+          rows={1}
+          autoFocus
+          onKeyDown={(event) => {
+            if (
+              event.key === 'Enter' &&
+              !event.shiftKey &&
+              !event.nativeEvent.isComposing
+            ) {
+              event.preventDefault();
 
-            if (status !== 'ready') {
-              toast.error('Please wait for the model to finish its response!');
-            } else {
-              submitForm();
+              if (status !== 'ready') {
+                toast.error('Please wait for the model to finish its response!');
+              } else {
+                submitForm();
+              }
             }
-          }
-        }}
-      />
+          }}
+        />
 
-      <div className="absolute bottom-0 p-2 w-fit flex flex-row justify-start">
-        <AttachmentsButton fileInputRef={fileInputRef} status={status} />
-      </div>
-
-      <div className="absolute bottom-0 right-0 p-2 w-fit flex flex-row justify-end">
-        {status === 'submitted' ? (
-          <StopButton stop={stop} setMessages={setMessages} />
+        {isMultiline ? (
+          <div className="flex justify-end items-center p-2 mt-auto gap-2">
+            <AttachmentsButton fileInputRef={fileInputRef} status={status} />
+            {status === 'submitted' ? (
+              <StopButton stop={stop} setMessages={setMessages} />
+            ) : (
+              <SendButton
+                input={input}
+                submitForm={submitForm}
+                uploadQueue={uploadQueue}
+              />
+            )}
+          </div>
         ) : (
-          <SendButton
-            input={input}
-            submitForm={submitForm}
-            uploadQueue={uploadQueue}
-          />
+          <>
+            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
+              <AttachmentsButton fileInputRef={fileInputRef} status={status} />
+              {status === 'submitted' ? (
+                <StopButton stop={stop} setMessages={setMessages} />
+              ) : (
+                <SendButton
+                  input={input}
+                  submitForm={submitForm}
+                  uploadQueue={uploadQueue}
+                />
+              )}
+            </div>
+          </>
         )}
       </div>
     </div>
@@ -333,7 +389,7 @@ function PureAttachmentsButton({
   return (
     <Button
       data-testid="attachments-button"
-      className="rounded-md rounded-bl-lg p-[7px] h-fit dark:border-zinc-700 hover:dark:bg-zinc-900 hover:bg-zinc-200"
+      className="rounded-md p-2 h-fit text-muted-foreground"
       onClick={(event) => {
         event.preventDefault();
         fileInputRef.current?.click();
@@ -341,7 +397,7 @@ function PureAttachmentsButton({
       disabled={status !== 'ready'}
       variant="ghost"
     >
-      <PaperclipIcon size={14} />
+      <PaperclipIcon size={18} />
     </Button>
   );
 }
@@ -358,14 +414,15 @@ function PureStopButton({
   return (
     <Button
       data-testid="stop-button"
-      className="rounded-full p-1.5 h-fit border dark:border-zinc-600"
+      className="rounded-full p-2 h-fit"
       onClick={(event) => {
         event.preventDefault();
         stop();
         setMessages((messages) => messages);
       }}
+      variant="ghost"
     >
-      <StopIcon size={14} />
+      <StopIcon size={18} />
     </Button>
   );
 }
@@ -384,14 +441,14 @@ function PureSendButton({
   return (
     <Button
       data-testid="send-button"
-      className="rounded-full p-1.5 h-fit border dark:border-zinc-600"
+      className="rounded-lg p-2 h-fit bg-primary text-primary-foreground hover:bg-primary/90"
       onClick={(event) => {
         event.preventDefault();
         submitForm();
       }}
       disabled={input.length === 0 || uploadQueue.length > 0}
     >
-      <ArrowUpIcon size={14} />
+      <ArrowUpIcon size={18} />
     </Button>
   );
 }

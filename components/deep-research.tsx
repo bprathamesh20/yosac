@@ -46,13 +46,9 @@ export function DeepResearchResult({
         </div>  
         <div className="flex flex-col gap-2 w-full">  
           <div className="font-medium">Deep Research</div>  
-          <div className="text-sm text-muted-foreground">  
-            {expanded ? result.text : result.text.slice(0, 80) + '...'}
-          </div>  
             
           {result.sources && result.sources.length > 0 && (  
             <div className="mt-2">  
-              <div className="font-medium text-sm mb-1">Sources:</div>  
               <div className="flex flex-wrap gap-2"> 
                 {result.sources.slice(0, expanded ? undefined : 3).map((source, i) => (  
                   <a 
