@@ -145,14 +145,13 @@ export function ProgramResearchResult({ result }: {
   return (
     <div className="border rounded-xl shadow-sm bg-background w-full max-w-2xl mx-auto overflow-hidden">
       {data.imageUrls && data.imageUrls.length > 0 && (
-        <div className="w-full overflow-x-auto flex gap-2 px-5 pt-4 pb-2">
+        <div className="w-full flex flex-row flex-wrap justify-center gap-2 px-5 pt-4 pb-2 md:flex-nowrap md:justify-start md:overflow-x-auto">
           {data.imageUrls.map((url, idx) => (
             <img
               key={idx}
               src={url}
               alt={`Program image ${idx + 1}`}
-              className="rounded-md object-cover max-h-32 border cursor-pointer"
-              style={{ minWidth: '120px', maxWidth: '200px' }}
+              className="rounded-md object-cover w-[calc(50%-0.25rem)] h-auto max-h-36 border cursor-pointer md:w-auto md:min-w-[120px] md:max-w-[200px] md:max-h-32"
               onClick={() => setViewerImg(url)}
             />
           ))}
