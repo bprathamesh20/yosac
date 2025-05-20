@@ -192,7 +192,7 @@ export function ProgramCard({ program, isSelected, onSelectProgram, canSelectMor
           </Button>
           {/* Placeholder View Details Button - Link to a program detail page if exists */}
           <Button asChild size="sm" className="bg-gray-800 hover:bg-gray-900 text-white text-xs px-3 py-1.5">
-            <Link href={program.officialLink || "#"} target={program.officialLink ? "_blank" : "_self"} rel="noopener noreferrer">
+            <Link href={`/programs/${program.id}`}>
               View Details
             </Link>
           </Button>

@@ -5,6 +5,7 @@ import { Button } from './ui/button';
 import { HeartIcon, InfoIcon, Loader2 as LoaderIcon } from 'lucide-react'; // Using lucide-react for icons
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import type { UseChatHelpers } from '@ai-sdk/react'; // for append and handleSubmit types
 
 // Define props type based on the tool's output schema
 interface UniversityShortlist {
@@ -98,24 +99,43 @@ export function PersonalizedShortlistingsCall({ args }: { args: { program: strin
   );
 }
 
-export function PersonalizedShortlistingsResult({ result }: {
+export function PersonalizedShortlistingsResult({ result, chatId, append, handleSubmit }: {
   result: {
     object?: UniversityShortlist[];
     text?: string; // Fallback text
-  }
+  };
+  chatId?: string; // Added chatId prop
+  append: UseChatHelpers['append'];
+  handleSubmit: UseChatHelpers['handleSubmit'];
 }) {
   const universities = result.object;
   const [savingStates, setSavingStates] = useState<Record<string, boolean>>({});
+  const [viewingDetailsStates, setViewingDetailsStates] = useState<Record<string, boolean>>({});
+  const currentChatId = chatId; // directly use chatId prop (assumed passed correctly)
 
   const handleSaveProgram = async (uni: UniversityShortlist) => {
     const uniId = `${uni.name}-${uni.program}`;
     setSavingStates(prev => ({ ...prev, [uniId]: true }));
     
-
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     toast.success(`${uni.name} - ${uni.program} has been notionally saved!`); // Placeholder
     setSavingStates(prev => ({ ...prev, [uniId]: false }));
+  };
+
+  const handleViewDetailsClick = async (uni: UniversityShortlist) => {
+    const uniId = `${uni.name}-${uni.program}`;
+    setViewingDetailsStates(prev => ({ ...prev, [uniId]: true }));
+    const content = `tell me more about ${uni.program} at ${uni.name}`;
+    try {
+      append({ role: 'user', content }); // append to chat
+      await handleSubmit(undefined); // send the message to server
+    } catch (error) {
+      console.error('Failed to send message for "View Details":', error);
+      toast.error('Error sending message. Please try again.');
+    } finally {
+      setViewingDetailsStates(prev => ({ ...prev, [uniId]: false }));
+    }
   };
 
   if (!universities || universities.length === 0) {
@@ -146,6 +166,7 @@ export function PersonalizedShortlistingsResult({ result }: {
         {universities.map((uni, index) => {
           const uniId = `${uni.name}-${uni.program}-${index}`;
           const isSaving = savingStates[uniId] || false;
+          const isViewingDetails = viewingDetailsStates[`${uni.name}-${uni.program}`] || false; // Check loading state for view details
           const highlightsList = uni.highlights.split('\n').map(h => h.trim()).filter(h => h.length > 0);
 
           return (
@@ -208,9 +229,15 @@ export function PersonalizedShortlistingsResult({ result }: {
 
               {/* Footer Buttons */}
               <div className="px-5 py-3 border-t flex justify-between items-center bg-gray-50/70 rounded-b-xl">
-                <Button variant="outline" size="sm" className="text-sm gap-1.5 hover:bg-gray-100 active:bg-gray-200 transition-colors">
-                  <InfoIcon size={14} />
-                  View Details
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="text-sm gap-1.5 hover:bg-gray-100 active:bg-gray-200 transition-colors"
+                  onClick={() => handleViewDetailsClick(uni)}
+                  disabled={isViewingDetails || !currentChatId}
+                >
+                  {isViewingDetails ? <LoaderIcon className="animate-spin" size={14} /> : <InfoIcon size={14} />}
+                  {isViewingDetails ? 'Loading...' : 'View Details'}
                 </Button>
                 <Button 
                   variant="outline" 
