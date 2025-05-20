@@ -10,6 +10,7 @@ import { SubmitButton } from '@/components/submit-button';
 
 import { login, type LoginActionState } from '../actions';
 import { useSession } from 'next-auth/react';
+import { GoogleSignInButton } from '@/components/google-signin-button';
 
 export default function Page() {
   const router = useRouter();
@@ -60,16 +61,33 @@ export default function Page() {
         </div>
         <AuthForm action={handleSubmit} defaultEmail={email}>
           <SubmitButton isSuccessful={isSuccessful}>Sign in</SubmitButton>
-          <p className="text-center text-sm text-gray-600 mt-4 dark:text-zinc-400">
-            {"Don't have an account? "}
-            <Link
-              href="/register"
-              className="font-semibold text-gray-800 hover:underline dark:text-zinc-200"
-            >
-              Sign up
-            </Link>
-            {' for free.'}
-          </p>
+          <div className="mt-6">  
+          <div className="relative">  
+            <div className="absolute inset-0 flex items-center">  
+              <div className="w-full border-t border-gray-300 dark:border-gray-700"></div>  
+            </div>  
+            <div className="relative flex justify-center text-sm">  
+              <span className="px-2 bg-background text-gray-500 dark:text-gray-400">  
+                Or continue with  
+              </span>  
+            </div>  
+          </div>  
+            
+          <div className="mt-6">  
+            <GoogleSignInButton />  
+          </div>  
+        </div>  
+          
+        <p className="text-center text-sm text-gray-600 mt-4 dark:text-zinc-400">  
+          {"Don't have an account? "}  
+          <Link  
+            href="/register"  
+            className="font-semibold text-gray-800 hover:underline dark:text-zinc-200"  
+          >  
+            Sign up  
+          </Link>  
+          {' for free.'}  
+        </p>  
         </AuthForm>
       </div>
     </div>

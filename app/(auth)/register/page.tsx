@@ -6,6 +6,7 @@ import { useActionState, useEffect, useState } from 'react';
 
 import { AuthForm } from '@/components/auth-form';
 import { SubmitButton } from '@/components/submit-button';
+import { GoogleSignInButton } from '@/components/google-signin-button';
 
 import { register, type RegisterActionState } from '../actions';
 import { toast } from '@/components/toast';
@@ -61,6 +62,21 @@ export default function Page() {
         </div>
         <AuthForm action={handleSubmit} defaultEmail={email}>
           <SubmitButton isSuccessful={isSuccessful}>Sign Up</SubmitButton>
+          <div className="mt-6">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300 dark:border-gray-700"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-background text-gray-500 dark:text-gray-400">
+                  Or continue with
+                </span>
+              </div>
+            </div>
+            <div className="mt-6">
+              <GoogleSignInButton />
+            </div>
+          </div>
           <p className="text-center text-sm text-gray-600 mt-4 dark:text-zinc-400">
             {'Already have an account? '}
             <Link
