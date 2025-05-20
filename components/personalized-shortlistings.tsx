@@ -5,6 +5,7 @@ import { Button } from './ui/button';
 import { HeartIcon, InfoIcon, Loader2 as LoaderIcon } from 'lucide-react'; // Using lucide-react for icons
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import type { UseChatHelpers } from '@ai-sdk/react'; // for append and handleSubmit types
 
 // Define props type based on the tool's output schema
 interface UniversityShortlist {
@@ -31,91 +32,74 @@ const loadingMessages = [
 ];
 
 export function PersonalizedShortlistingsCall({ args }: { args: { program: string } }) {
-  const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
+  const [secondsElapsed, setSecondsElapsed] = useState(0);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
-      setCurrentMessageIndex((prevIndex) => (prevIndex + 1) % loadingMessages.length);
-    }, 10000); // Change message every 10 seconds
-
-    return () => clearInterval(intervalId); // Cleanup on component unmount
+      setSecondsElapsed(prev => {
+        if (prev >= 180) {
+          clearInterval(intervalId);
+          return prev;
+        }
+        return prev + 1;
+      });
+    }, 1000);
+    return () => clearInterval(intervalId);
   }, []);
 
+  const progress = Math.min((secondsElapsed / 300) * 100, 100);
+  const currentMessageIndex = Math.floor(secondsElapsed / 30) % loadingMessages.length;
+
   return (
-    <div>
-      <div className="mb-6 flex items-center justify-between text-base text-muted-foreground">
-        <div className="flex items-center gap-2">
-          <LoaderIcon className="animate-spin h-5 w-5" />
-          <span className="text-right">{loadingMessages[currentMessageIndex]}</span>
-        </div>
-        
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {[1, 2].map((_, i) => ( // Show 2 skeleton cards for a 2-column grid potential
-          <div key={i} className="bg-background border rounded-xl shadow-sm flex flex-col animate-pulse">
-            <div className="p-5 flex-grow">
-              {/* Header */}
-              <div className="flex items-start gap-4 mb-4">
-                <Skeleton className="h-14 w-14 rounded-full" />
-                <div className="flex-1">
-                  <Skeleton className="h-6 w-3/4 mb-1.5" />
-                  <Skeleton className="h-4 w-1/2" />
-                </div>
-              </div>
-
-              {/* Match Score & Choice Type */}
-              <div className="flex flex-wrap items-center gap-2 mb-5">
-                <Skeleton className="h-7 w-[160px] rounded-md" />
-                <Skeleton className="h-7 w-[100px] rounded-md" />
-              </div>
-
-              {/* Key Highlights */}
-              <div className="mb-5">
-                <Skeleton className="h-5 w-1/3 mb-2" />
-                <ul className="space-y-1.5">
-                  <li><Skeleton className="h-4 w-full" /></li>
-                  <li><Skeleton className="h-4 w-5/6" /></li>
-                  <li><Skeleton className="h-4 w-3/4" /></li>
-                </ul>
-              </div>
-              
-              {/* Tuition & Duration */}
-              <div className="flex justify-between items-center text-xs">
-                <Skeleton className="h-4 w-2/5" />
-                <Skeleton className="h-4 w-1/3" />
-              </div>
-            </div>
-
-            {/* Footer Buttons */}
-            <div className="px-5 py-3 border-t flex justify-between items-center bg-gray-50/70 rounded-b-xl">
-              <Skeleton className="h-9 w-[120px] rounded-md" />
-              <Skeleton className="h-9 w-[90px] rounded-md" />
-            </div>
-          </div>
-        ))}
+    <div className="border rounded-2xl border-gray-200 bg-white p-6 w-2/3">
+      <span className="text-gray-800 text-base font-medium mb-4 block">{loadingMessages[currentMessageIndex]}</span>
+      <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+        <div
+          className="h-2 bg-primary transition-all duration-1000"
+          style={{ width: `${progress}%` }}
+        />
       </div>
     </div>
   );
 }
 
-export function PersonalizedShortlistingsResult({ result }: {
+export function PersonalizedShortlistingsResult({ result, chatId, append, handleSubmit }: {
   result: {
     object?: UniversityShortlist[];
     text?: string; // Fallback text
-  }
+  };
+  chatId?: string; // Added chatId prop
+  append: UseChatHelpers['append'];
+  handleSubmit: UseChatHelpers['handleSubmit'];
 }) {
   const universities = result.object;
   const [savingStates, setSavingStates] = useState<Record<string, boolean>>({});
+  const [viewingDetailsStates, setViewingDetailsStates] = useState<Record<string, boolean>>({});
+  const currentChatId = chatId; // directly use chatId prop (assumed passed correctly)
 
   const handleSaveProgram = async (uni: UniversityShortlist) => {
     const uniId = `${uni.name}-${uni.program}`;
     setSavingStates(prev => ({ ...prev, [uniId]: true }));
     
-
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     toast.success(`${uni.name} - ${uni.program} has been notionally saved!`); // Placeholder
     setSavingStates(prev => ({ ...prev, [uniId]: false }));
+  };
+
+  const handleViewDetailsClick = async (uni: UniversityShortlist) => {
+    const uniId = `${uni.name}-${uni.program}`;
+    setViewingDetailsStates(prev => ({ ...prev, [uniId]: true }));
+    const content = `tell me more about ${uni.program} at ${uni.name}`;
+    try {
+      append({ role: 'user', content }); // append to chat
+      await handleSubmit(undefined); // send the message to server
+    } catch (error) {
+      console.error('Failed to send message for "View Details":', error);
+      toast.error('Error sending message. Please try again.');
+    } finally {
+      setViewingDetailsStates(prev => ({ ...prev, [uniId]: false }));
+    }
   };
 
   if (!universities || universities.length === 0) {
@@ -146,6 +130,7 @@ export function PersonalizedShortlistingsResult({ result }: {
         {universities.map((uni, index) => {
           const uniId = `${uni.name}-${uni.program}-${index}`;
           const isSaving = savingStates[uniId] || false;
+          const isViewingDetails = viewingDetailsStates[`${uni.name}-${uni.program}`] || false; // Check loading state for view details
           const highlightsList = uni.highlights.split('\n').map(h => h.trim()).filter(h => h.length > 0);
 
           return (
@@ -208,9 +193,15 @@ export function PersonalizedShortlistingsResult({ result }: {
 
               {/* Footer Buttons */}
               <div className="px-5 py-3 border-t flex justify-between items-center bg-gray-50/70 rounded-b-xl">
-                <Button variant="outline" size="sm" className="text-sm gap-1.5 hover:bg-gray-100 active:bg-gray-200 transition-colors">
-                  <InfoIcon size={14} />
-                  View Details
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="text-sm gap-1.5 hover:bg-gray-100 active:bg-gray-200 transition-colors"
+                  onClick={() => handleViewDetailsClick(uni)}
+                  disabled={isViewingDetails || !currentChatId}
+                >
+                  {isViewingDetails ? <LoaderIcon className="animate-spin" size={14} /> : <InfoIcon size={14} />}
+                  {isViewingDetails ? 'Loading...' : 'View Details'}
                 </Button>
                 <Button 
                   variant="outline" 

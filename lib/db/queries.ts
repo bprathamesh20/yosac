@@ -780,3 +780,17 @@ export async function getTwoSavedPrograms({
     throw error;
   }
 }
+
+export async function getSavedProgramById({ id, userId }: { id: string; userId: string }) {
+  try {
+    const [programResult] = await db
+      .select()
+      .from(savedProgram)
+      .where(and(eq(savedProgram.id, id), eq(savedProgram.userId, userId)))
+      .limit(1);
+    return programResult;
+  } catch (error) {
+    console.error('Failed to get saved program by id from database');
+    throw error;
+  }
+}

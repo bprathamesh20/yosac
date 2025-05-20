@@ -34,6 +34,8 @@ const PurePreviewMessage = ({
   reload,
   isReadonly,
   requiresScrollPadding,
+  append,
+  handleSubmit,
 }: {
   chatId: string;
   message: UIMessage;
@@ -43,6 +45,8 @@ const PurePreviewMessage = ({
   reload: UseChatHelpers['reload'];
   isReadonly: boolean;
   requiresScrollPadding: boolean;
+  append: UseChatHelpers['append'];
+  handleSubmit: UseChatHelpers['handleSubmit'];
 }) => {
   const [mode, setMode] = useState<'view' | 'edit'>('view');
 
@@ -228,7 +232,7 @@ const PurePreviewMessage = ({
                       ) : toolName === 'compareProgram' ? (
                         <CompareProgramResult result={result} />
                       ) : toolName === 'personalizedShortlistings' ? (
-                        <PersonalizedShortlistingsResult result={result} />
+                        <PersonalizedShortlistingsResult result={result} chatId={chatId} append={append} handleSubmit={handleSubmit} />
                       ) : (
                         <pre>{JSON.stringify(result, null, 2)}</pre>
                       )}
