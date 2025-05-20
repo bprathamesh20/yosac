@@ -32,68 +32,32 @@ const loadingMessages = [
 ];
 
 export function PersonalizedShortlistingsCall({ args }: { args: { program: string } }) {
-  const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
+  const [secondsElapsed, setSecondsElapsed] = useState(0);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
-      setCurrentMessageIndex((prevIndex) => (prevIndex + 1) % loadingMessages.length);
-    }, 10000); // Change message every 10 seconds
-
-    return () => clearInterval(intervalId); // Cleanup on component unmount
+      setSecondsElapsed(prev => {
+        if (prev >= 180) {
+          clearInterval(intervalId);
+          return prev;
+        }
+        return prev + 1;
+      });
+    }, 1000);
+    return () => clearInterval(intervalId);
   }, []);
 
+  const progress = Math.min((secondsElapsed / 300) * 100, 100);
+  const currentMessageIndex = Math.floor(secondsElapsed / 30) % loadingMessages.length;
+
   return (
-    <div>
-      <div className="mb-6 flex items-center justify-between text-base text-muted-foreground">
-        <div className="flex items-center gap-2">
-          <LoaderIcon className="animate-spin h-5 w-5" />
-          <span className="text-right">{loadingMessages[currentMessageIndex]}</span>
-        </div>
-        
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {[1, 2].map((_, i) => ( // Show 2 skeleton cards for a 2-column grid potential
-          <div key={i} className="bg-background border rounded-xl shadow-sm flex flex-col animate-pulse">
-            <div className="p-5 flex-grow">
-              {/* Header */}
-              <div className="flex items-start gap-4 mb-4">
-                <Skeleton className="h-14 w-14 rounded-full" />
-                <div className="flex-1">
-                  <Skeleton className="h-6 w-3/4 mb-1.5" />
-                  <Skeleton className="h-4 w-1/2" />
-                </div>
-              </div>
-
-              {/* Match Score & Choice Type */}
-              <div className="flex flex-wrap items-center gap-2 mb-5">
-                <Skeleton className="h-7 w-[160px] rounded-md" />
-                <Skeleton className="h-7 w-[100px] rounded-md" />
-              </div>
-
-              {/* Key Highlights */}
-              <div className="mb-5">
-                <Skeleton className="h-5 w-1/3 mb-2" />
-                <ul className="space-y-1.5">
-                  <li><Skeleton className="h-4 w-full" /></li>
-                  <li><Skeleton className="h-4 w-5/6" /></li>
-                  <li><Skeleton className="h-4 w-3/4" /></li>
-                </ul>
-              </div>
-              
-              {/* Tuition & Duration */}
-              <div className="flex justify-between items-center text-xs">
-                <Skeleton className="h-4 w-2/5" />
-                <Skeleton className="h-4 w-1/3" />
-              </div>
-            </div>
-
-            {/* Footer Buttons */}
-            <div className="px-5 py-3 border-t flex justify-between items-center bg-gray-50/70 rounded-b-xl">
-              <Skeleton className="h-9 w-[120px] rounded-md" />
-              <Skeleton className="h-9 w-[90px] rounded-md" />
-            </div>
-          </div>
-        ))}
+    <div className="border rounded-2xl border-gray-200 bg-white p-6 w-2/3">
+      <span className="text-gray-800 text-base font-medium mb-4 block">{loadingMessages[currentMessageIndex]}</span>
+      <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+        <div
+          className="h-2 bg-primary transition-all duration-1000"
+          style={{ width: `${progress}%` }}
+        />
       </div>
     </div>
   );
