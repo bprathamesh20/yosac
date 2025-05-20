@@ -5,6 +5,8 @@ import { createGuestUser, getUser } from '@/lib/db/queries';
 import { authConfig } from './auth.config';
 import { DUMMY_PASSWORD } from '@/lib/constants';
 import type { DefaultJWT } from 'next-auth/jwt';
+import GoogleProvider from 'next-auth/providers/google';
+import { createUserFromGoogle } from '@/lib/db/queries';
 
 export type UserType = 'guest' | 'regular';
 
@@ -39,6 +41,10 @@ export const {
   ...authConfig,
   trustHost: true,
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    }) as any,
     Credentials({
       credentials: {},
       async authorize({ email, password }: any) {
@@ -88,6 +94,34 @@ export const {
       }
 
       return session;
+    },
+    async signIn({ user, account }) {
+      if (account?.provider === 'google' && user.email) {
+        try {
+          const existingUsers = await getUser(user.email);
+
+          if (existingUsers.length === 0) {
+            const [newUser] = await createUserFromGoogle(user.email);
+            if (newUser) {
+              user.id = newUser.id;
+              user.type = 'regular';
+            } else {
+              return false;
+            }
+          } else {
+            const [existingUser] = existingUsers;
+            user.id = existingUser.id;
+            user.type = 'regular';
+          }
+          return true;
+        } catch (error) {
+          if (error instanceof Error) {
+            console.error('Google sign-in error:', error.message);
+          }
+          return false;
+        }
+      }
+      return true;
     },
   },
 });

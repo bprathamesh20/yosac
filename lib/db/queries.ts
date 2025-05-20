@@ -30,7 +30,6 @@ import {
   stream,
   studentProfile,
   savedProgram,
-  Program,
   program,
 } from './schema';
 import type { ArtifactKind } from '@/components/artifact';
@@ -55,7 +54,9 @@ export async function getUser(email: string): Promise<Array<User>> {
   }
 }
 
-export async function getUserById({ id }: { id: string }): Promise<Array<User>> {
+export async function getUserById({
+  id,
+}: { id: string }): Promise<Array<User>> {
   try {
     return await db.select().from(user).where(eq(user.id, id));
   } catch (error) {
@@ -86,6 +87,21 @@ export async function createGuestUser() {
     });
   } catch (error) {
     console.error('Failed to create guest user in database');
+    throw error;
+  }
+}
+
+export async function createUserFromGoogle(email: string) {
+  try {
+    return await db
+      .insert(user)
+      .values({
+        email,
+        password: null, // No password for Google users
+      })
+      .returning();
+  } catch (error) {
+    console.error('Failed to create user from Google in database');
     throw error;
   }
 }
@@ -524,7 +540,9 @@ export async function getStreamIdsByChatId({ chatId }: { chatId: string }) {
   }
 }
 
-export async function getStudentProfileByUserId({ userId }: { userId: string }) {
+export async function getStudentProfileByUserId({
+  userId,
+}: { userId: string }) {
   try {
     const [profile] = await db
       .select()

@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/app/(auth)/auth';
-import { createOrUpdateStudentProfile, getStudentProfileByUserId } from '@/lib/db/queries';
+import {
+  createOrUpdateStudentProfile,
+  getStudentProfileByUserId,
+} from '@/lib/db/queries';
 
 export async function GET() {
   const session = await auth();
@@ -10,10 +13,15 @@ export async function GET() {
   }
 
   try {
-    const profile = await getStudentProfileByUserId({ userId: session.user.id });
+    const profile = await getStudentProfileByUserId({
+      userId: session.user.id,
+    });
     return NextResponse.json({ profile });
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to get profile' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Failed to get profile' },
+      { status: 500 },
+    );
   }
 }
 
@@ -26,12 +34,12 @@ export async function POST(request: NextRequest) {
 
   try {
     const data = await request.json();
-    const profile = await createOrUpdateStudentProfile({
-      userId: session.user.id,
-      ...data
-    });
+    const profile = await createOrUpdateStudentProfile({userId: session.user.id, ...data});
     return NextResponse.json({ profile });
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to update profile' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Failed to update profile' },
+      { status: 500 },
+    );
   }
-} 
+}
