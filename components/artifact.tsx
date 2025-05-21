@@ -322,6 +322,8 @@ function PureArtifact({
                   messages={messages}
                   setMessages={setMessages}
                   reload={reload}
+                  append={append}
+                  handleSubmit={handleSubmit}
                   isReadonly={isReadonly}
                   artifactStatus={artifact.status}
                 />

@@ -19,7 +19,7 @@ import { auth } from '@/app/(auth)/auth';
 
 const DEFAULT_IMAGE_URL = 'https://images.unsplash.com/photo-1562774053-701939374585?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1700&q=80';
 
-export default async function ProgramDetailPage({ params }: { params: { id: string } }) {
+export default async function ProgramDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const awaitedParams = await params;
   const programId = awaitedParams.id;
 
