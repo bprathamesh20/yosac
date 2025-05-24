@@ -24,40 +24,48 @@ export const universityResearch = ({ dataStream }: { dataStream?: any }) => tool
     course: z.string().describe('The course to research universities for').optional(),
   }),
   execute: async ({ country, course }) => {
-    if (dataStream) {
-      dataStream.writeData({
-        type: 'status',
-        content: 'Researching universities...'
-      });   
+    try {
+      if (dataStream) {
+        dataStream.writeData({
+          type: 'status',
+          content: 'Researching universities...'
+        });   
+      }
+      const prompt = `List the top 5 universities in ${country} in ${course ? course : ''} according to the latest QS World University Rankings. For each, provide:\n- Name\n- Global rank (according to QS World University Rankings)\n- A short description (1 sentence)\n- An approximate reputation score as a percentage (if available)\nFormat as a readable list.`;
+      const { text } = await generateText({
+        model: perplexity('sonar-pro'),
+        prompt,
+      });
+
+
+
+ const { object } = await generateObject({
+   model: google('gemini-2.0-flash'),
+   output: 'array',
+   schema: z.object({
+     name: z.string().describe('The name of the university'),
+     rank: z.number().describe('The global rank of the university'),
+     description: z.string().describe('A short description of the university'),
+     photo: z.string().describe('Link for the college Logo'),
+   }),
+   prompt: 'Generate the json object for universities form the given info ' + text,
+ });
+
+ await Promise.all(
+   object.map(async (uni) => {
+     const photo = await fetchUniversityPhoto(uni.name);
+     uni.photo = photo ?? photoLink;
+   })
+ );
+
+       console.log(object);
+       return { object };
+    } catch (error: any) {
+      console.error('[universityResearch] Error:', error);
+      if (dataStream) {
+        dataStream.writeData({ type: 'error', content: error.message });
+      }
+      return { text: `Error: ${error.message}` };
     }
-    const prompt = `List the top 5 universities in ${country} in ${course ? course : ''} according to the latest QS World University Rankings. For each, provide:\n- Name\n- Global rank (according to QS World University Rankings)\n- A short description (1 sentence)\n- An approximate reputation score as a percentage (if available)\nFormat as a readable list.`;
-    const { text } = await generateText({
-      model: perplexity('sonar-pro'),
-      prompt,
-    });
-
-
-
-const { object } = await generateObject({
-  model: google('gemini-2.0-flash'),
-  output: 'array',
-  schema: z.object({
-    name: z.string().describe('The name of the university'),
-    rank: z.number().describe('The global rank of the university'),
-    description: z.string().describe('A short description of the university'),
-    photo: z.string().describe('Link for the college Logo'),
-  }),
-  prompt: 'Generate the json object for universities form the given info ' + text,
-});
-
-await Promise.all(
-  object.map(async (uni) => {
-    const photo = await fetchUniversityPhoto(uni.name);
-    uni.photo = photo ?? photoLink;
-  })
-);
-
-    console.log(object);
-    return { object };
   },
 }); 

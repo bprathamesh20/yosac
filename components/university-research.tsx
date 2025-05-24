@@ -11,7 +11,7 @@ function TrophyIcon() {
 export function UniversityResearchCall({ args }: { args: { country: string } }) {
   // Show 3 skeleton cards as placeholders
   return (
-    <div className="flex flex-col items-center md:flex-row md:items-start gap-4 pb-2 md:overflow-x-auto">
+    <div className="flex flex-col items-center md:flex-row md:items-stretch gap-4 pb-2 md:overflow-x-auto">
       {[1, 2, 3].map((_, i) => (
         <div key={i} className="bg-background border rounded-xl shadow-sm min-w-[260px] max-w-[300px] flex flex-col p-4 gap-2 animate-pulse">
           <div className="h-28 w-full bg-muted rounded-lg mb-2 flex items-center justify-center text-4xl">
@@ -59,7 +59,7 @@ export function UniversityResearchResult({ result }: {
   }
 
   return (
-    <div className="flex flex-col items-center md:flex-row md:items-start gap-4 pb-2 md:overflow-x-auto">
+    <div className="flex flex-col items-center md:flex-row md:items-stretch gap-4 pb-2 md:overflow-x-auto">
       {universities.map((u, i) => (
         <div key={i} className="bg-background border rounded-xl shadow-sm min-w-[260px] max-w-[300px] flex flex-col p-4 gap-2">
           <div className="h-28 w-full bg-muted rounded-lg mb-2 flex items-center justify-center text-4xl">

@@ -236,7 +236,8 @@ export async function POST(request: Request) {
           sendReasoning: true,
         });
       },
-      onError: () => {
+      onError: (error: any) => {
+        console.error('[stream] Error:', error);
         return 'Oops, an error occurred!';
       },
     });
